@@ -7,6 +7,7 @@
 
         <!-- On ajoutera ici toutes nos classes @Entity -->
 <!--        <class>be.condorcet.model.Vehicule</class>-->
+        <class>be.condorcet.model.test</class>
 
         <properties>
             <!-- Dialecte Oracle (Hibernate le détecte souvent seul, mais au cas où) -->

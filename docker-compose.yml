@@ -1,0 +1,24 @@
+services:
+  oracle:
+    image: gvenzl/oracle-free:slim
+    container_name: oracle-local
+    ports:
+      - "1521:1521"  # pr nous connecter en direct si on veut (SQL Developer, etc.)
+    environment:
+      ORACLE_PASSWORD: oracle  # mdp pour SYS/SYSTEM
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./init-schema.sql:/container-entrypoint-initdb.d/init-schema.sql  # exécute mon script pour créer mon compte oracle au premier démarrage
+
+  wildfly:
+    image: quay.io/wildfly/wildfly:latest-jdk21
+    container_name: wildfly-local
+    depends_on:
+      - oracle  # démarre après Oracle
+    ports:
+      - "8180:8080"   # l'app : http://localhost:8180/
+      - "9990:9990"   # console admin
+    volumes:
+      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war  # déploie le .war automatiquement (à la racine donc dispo sur http://localhost:8180/)
+volumes:
+  oracle-data:  # volume pour garder tes données Oracle
