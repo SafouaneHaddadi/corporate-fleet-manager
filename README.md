@@ -22,19 +22,25 @@ Simple company vehicle management system.
 - Hibernate + Maven
 - Servlet/JSP + JAX-RS
 
-## How to run
+## Local Development Setup (Docker)
+
+To run and test the application locally (identical to school environment):
 
 ```bash
 # 1. Clone the project
 git clone https://github.com/SafouaneHaddadi/corporate-fleet-manager.git
 cd corporate-fleet-manager
 
-# 2. Open in IntelliJ IDEA → Maven → Reload project
+# 2. Build the application
+mvn clean package
 
-# 3. Run on WildFly
-- Add WildFly server in IntelliJ 
-- Deploy "corporate-fleet-manager:war exploded"
-- Application context: /corporate-fleet-manager
+# 3. Start containers (Oracle + WildFly)
+docker-compose up -d
 
-# 4. Open browser
-http://localhost:8180/corporate-fleet-manager/
+# 4. Access the application
+http://localhost:8180/
+```
+
+## Context
+
+**Academic project** for the "Applications Informatiques 3" course (Jakarta EE module) at HEPH-Condorcet.
