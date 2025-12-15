@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ce fichier configure une connexion à la DB Oracle pour WildFly -->
+<!-- Quand je déploies mon application (.war), WildFly lit ce fichier automatiquement -->
+<!-- et crée pour moi une "pool" de connexions réutilisables vers la base Condorcet -->
+<!-- Avantage : je n’ai pas besoin de toucher à la configuration du serveur (standalone.xml) -->
+
+
+<datasources xmlns="http://www.jboss.org/ironjacamar/schema">
+
+    <datasource jndi-name="java:jboss/datasources/OracleFleetDS">  <!-- Nom unique sous lequel WildFly va enregistrer cette connexion. C’est ce nom que j'utilise dans persistence.xml -->
+                pool-name="OracleFleetPool"
+                enabled="true"> <!-- active la connexeion dés le déploiement-->
+
+        <connection-url>jdbc:oracle:thin:@mons-oracle19.condorcet.be:1521:orcl</connection-url>
+        <driver>ojdbc11-23.3.0.23.09.jar</driver>
+        <security>
+            <user-name>ORA53</user-name>
+            <password>oracle</password>
+        </security>
+    </datasource>
+</datasources>
