@@ -24,6 +24,12 @@
             <version>6.1.0</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Jackson pour le support JSON (inclut @JsonIgnore, @JsonProperty, etc.) -->
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>3.1.5</version>
+        </dependency>
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
