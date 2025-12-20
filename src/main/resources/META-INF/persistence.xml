@@ -5,9 +5,11 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>java:jboss/datasources/OracleFleetDS</jta-data-source> <!-- Nom JNDI du datasource déployé via fleet-ds.xml -->
 
-        <!-- On ajoutera ici toutes nos classes @Entity -->
-<!--        <class>be.condorcet.model.Vehicule</class>-->
-        <class>be.condorcet.model.test</class>
+        <!-- On ajoute ici toutes nos classes @Entity -->
+        <class>be.condorcet.model.User</class>
+        <class>be.condorcet.model.Reservation</class>
+        <class>be.condorcet.model.Maintenance</class>
+        <class>be.condorcet.model.Vehicle</class>
 
         <properties>
             <!-- Dialecte Oracle (Hibernate le détecte souvent seul, mais au cas où) -->
