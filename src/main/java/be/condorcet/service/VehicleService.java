@@ -8,12 +8,30 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 @ApplicationScoped
 @Transactional
 public class VehicleService {
 
     @Inject
     private VehicleDAO vehicleDAO;
+
+    public List<Vehicle> getAllVehicles() {
+        return vehicleDAO.findAll();
+    }
+
+    public List<Vehicle> getAvailable() {
+        return vehicleDAO.findAvailableVehicles();
+    }
+
+    public List<Vehicle> searchVehicles(String brand) {
+        if (brand != null && !brand.trim().isEmpty()) {
+            return vehicleDAO.findByBrand(brand.trim());
+        }
+        return getAvailable();
+    }
+
 
     public Vehicle createVehicle(Vehicle v) {
 
@@ -76,5 +94,14 @@ public class VehicleService {
         // immatriculation et statut non modifiables -> On ignore complètement si fournis dans le JSON
 
         return vehicleDAO.update(existing); // <- renvoie l'entité mise à jour
+    }
+
+    public void deleteVehicle(Long id) {
+        Vehicle v = vehicleDAO.findById(id);
+        if (v == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+
+        vehicleDAO.delete(id);
     }
 }
