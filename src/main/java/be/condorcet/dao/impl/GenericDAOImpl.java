@@ -20,8 +20,9 @@ public abstract class GenericDAOImpl<T, ID> implements GenericDAO<T, ID> {
     }
 
     @Override
-    public void create(T entity) {
+    public T create(T entity) {
         em.persist(entity);
+        return entity;
     }
 
     @Override
@@ -29,9 +30,13 @@ public abstract class GenericDAOImpl<T, ID> implements GenericDAO<T, ID> {
         return em.find(entityClass, id); //la méthode a besoin de connaître la classe de l'entité
     }
 
+//    @Override
+//    public void update(T entity) {
+//        em.merge(entity);
+//    }
     @Override
-    public void update(T entity) {
-        em.merge(entity);
+    public T update(T entity) {
+        return em.merge(entity); // ← renvoie l'entité mergée
     }
 
     //on charge d'abord l'entité puis on la supprime
