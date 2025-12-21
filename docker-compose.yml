@@ -31,11 +31,6 @@ services:
       - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war
       # crée un fichier vide qui sera copié comme ROOT.war.dodeploy pour forcer le déploiement immédiat
       - ./deploy-trigger:/opt/jboss/wildfly/standalone/deployments/ROOT.war.dodeploy:ro
-    command: >
-      /bin/bash -c "
-      /opt/jboss/wildfly/bin/add-user.sh admin admin --silent &&
-      /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
-      "
 
 volumes:
   oracle-data:
