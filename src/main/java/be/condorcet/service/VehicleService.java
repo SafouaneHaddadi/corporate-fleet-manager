@@ -7,6 +7,7 @@ import be.condorcet.model.VehicleStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.util.List;
 
 @ApplicationScoped
 @Transactional
@@ -15,8 +16,30 @@ public class VehicleService {
     @Inject
     private VehicleDAO vehicleDAO;
 
-    public Vehicle createVehicle(Vehicle v) {
+    public List<Vehicle> getAllVehicles() {
+        return vehicleDAO.findAll();
+    }
 
+    public List<Vehicle> getAvailable() {
+        return vehicleDAO.findAvailableVehicles();
+    }
+
+    public Vehicle findById(Long id) {
+        Vehicle v = vehicleDAO.findById(id);
+        if (v == null) {
+            throw new BusinessException("Vehicle not found with id " + id);
+        }
+        return v;
+    }
+
+    public List<Vehicle> searchVehicles(String brand) {
+        if (brand != null && !brand.trim().isEmpty()) {
+            return vehicleDAO.findByBrand(brand.trim());
+        }
+        return getAvailable();
+    }
+
+    public Vehicle createVehicle(Vehicle v) {
         if (v.getBrand() == null || v.getBrand().isBlank()) {
             throw new BusinessException("brand is required");
         }
@@ -45,18 +68,16 @@ public class VehicleService {
         }
 
         v.setStatus(VehicleStatus.AVAILABLE);
-
         return vehicleDAO.create(v);
     }
 
-    //modif partielles
     public Vehicle updateVehicle(Long id, Vehicle updated) {
-        Vehicle existing = vehicleDAO.findById(id); //recup le véhicle existant
+        Vehicle existing = vehicleDAO.findById(id);
         if (existing == null) {
             throw new BusinessException("Vehicle not found");
         }
-        // mise à jour SEULEMENT si le champ est fourni et non vide
-        if (updated.getBrand() != null || !updated.getBrand().isBlank()) {
+        
+        if (updated.getBrand() != null && !updated.getBrand().isBlank()) {
             existing.setBrand(updated.getBrand());
         }
         if (updated.getModel() != null && !updated.getModel().isBlank()) {
@@ -69,12 +90,18 @@ public class VehicleService {
             }
             existing.setYear(updated.getYear());
         }
-        if (updated.getMileage() >= 0) {
+        if (updated.getMileage() != null && updated.getMileage() >= 0) {
             existing.setMileage(updated.getMileage());
         }
 
-        // immatriculation et statut non modifiables -> On ignore complètement si fournis dans le JSON
+        return vehicleDAO.update(existing);
+    }
 
-        return vehicleDAO.update(existing); // <- renvoie l'entité mise à jour
+    public void deleteVehicle(Long id) {
+        Vehicle v = vehicleDAO.findById(id);
+        if (v == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        vehicleDAO.delete(id);
     }
 }
