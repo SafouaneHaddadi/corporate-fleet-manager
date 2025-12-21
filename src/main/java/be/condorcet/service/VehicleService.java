@@ -1,0 +1,107 @@
+package be.condorcet.service;
+
+import be.condorcet.dao.VehicleDAO;
+import be.condorcet.exception.BusinessException;
+import be.condorcet.model.Vehicle;
+import be.condorcet.model.VehicleStatus;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import java.util.List;
+
+@ApplicationScoped
+@Transactional
+public class VehicleService {
+
+    @Inject
+    private VehicleDAO vehicleDAO;
+
+    public List<Vehicle> getAllVehicles() {
+        return vehicleDAO.findAll();
+    }
+
+    public List<Vehicle> getAvailable() {
+        return vehicleDAO.findAvailableVehicles();
+    }
+
+    public Vehicle findById(Long id) {
+        Vehicle v = vehicleDAO.findById(id);
+        if (v == null) {
+            throw new BusinessException("Vehicle not found with id " + id);
+        }
+        return v;
+    }
+
+    public List<Vehicle> searchVehicles(String brand) {
+        if (brand != null && !brand.trim().isEmpty()) {
+            return vehicleDAO.findByBrand(brand.trim());
+        }
+        return getAvailable();
+    }
+
+    public Vehicle createVehicle(Vehicle v) {
+        if (v.getBrand() == null || v.getBrand().isBlank()) {
+            throw new BusinessException("brand is required");
+        }
+        if (v.getModel() == null || v.getModel().isBlank()) {
+            throw new BusinessException("model is required");
+        }
+        if (v.getLicensePlate() == null || v.getLicensePlate().isBlank()) {
+            throw new BusinessException("licensePlate is required");
+        }
+        String plateRegex = "^[12]-[A-Z]{3}-[0-9]{3}$";
+        if (!v.getLicensePlate().matches(plateRegex)) {
+            throw new BusinessException("Invalid Belgian license plate format");
+        }
+        if (vehicleDAO.existsByLicensePlate(v.getLicensePlate())) {
+            throw new BusinessException("License plate already exists");
+        }
+        int currentYear = java.time.Year.now().getValue();
+        if (v.getYear() == null) {
+            throw new BusinessException("Year is required");
+        }
+        if (v.getYear() < 1900 || v.getYear() > currentYear + 1) {
+            throw new BusinessException("Invalid year");
+        }
+        if (v.getMileage() < 0) {
+            throw new BusinessException("Mileage cannot be negative");
+        }
+
+        v.setStatus(VehicleStatus.AVAILABLE);
+        return vehicleDAO.create(v);
+    }
+
+    public Vehicle updateVehicle(Long id, Vehicle updated) {
+        Vehicle existing = vehicleDAO.findById(id);
+        if (existing == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        
+        if (updated.getBrand() != null && !updated.getBrand().isBlank()) {
+            existing.setBrand(updated.getBrand());
+        }
+        if (updated.getModel() != null && !updated.getModel().isBlank()) {
+            existing.setModel(updated.getModel());
+        }
+        if (updated.getYear() != null) {
+            int currentYear = java.time.Year.now().getValue();
+            if (updated.getYear() < 1900 || updated.getYear() > currentYear + 1) {
+                throw new BusinessException("Invalid year");
+            }
+            existing.setYear(updated.getYear());
+        }
+        if (updated.getMileage() != null && updated.getMileage() >= 0) {
+            existing.setMileage(updated.getMileage());
+        }
+
+        return vehicleDAO.update(existing);
+    }
+
+    public void deleteVehicle(Long id) {
+        Vehicle v = vehicleDAO.findById(id);
+        if (v == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        vehicleDAO.delete(id);
+    }
+}

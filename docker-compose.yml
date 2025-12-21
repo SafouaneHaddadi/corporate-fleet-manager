@@ -1,24 +1,41 @@
+version: '3.9'
+
 services:
   oracle:
     image: gvenzl/oracle-free:slim
     container_name: oracle-local
     ports:
-      - "1521:1521"  # pr nous connecter en direct si on veut (SQL Developer, etc.)
+      - "1521:1521"
     environment:
-      ORACLE_PASSWORD: oracle  # mdp pour SYS/SYSTEM
+      ORACLE_PASSWORD: oracle
     volumes:
       - oracle-data:/opt/oracle/oradata
-      - ./init-schema.sql:/container-entrypoint-initdb.d/init-schema.sql  # exécute mon script pour créer mon compte oracle au premier démarrage
+      - ./init-schema.sql:/container-entrypoint-initdb.d/init-schema.sql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
   wildfly:
     image: quay.io/wildfly/wildfly:latest-jdk21
     container_name: wildfly-local
     depends_on:
-      - oracle  # démarre après Oracle
+      oracle:
+        condition: service_healthy
     ports:
-      - "8180:8080"   # l'app : http://localhost:8180/
-      - "9990:9990"   # console admin
+      - "8180:8080"
+      - "9990:9990"
     volumes:
-      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war  # déploie le .war automatiquement (à la racine donc dispo sur http://localhost:8180/)
+      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war
+      # crée un fichier vide qui sera copié comme ROOT.war.dodeploy pour forcer le déploiement immédiat
+      - ./deploy-trigger:/opt/jboss/wildfly/standalone/deployments/ROOT.war.dodeploy:ro
+    command: >
+      /bin/bash -c "
+      /opt/jboss/wildfly/bin/add-user.sh admin admin --silent &&
+      /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+      "
+
 volumes:
-  oracle-data:  # volume pour garder tes données Oracle
+  oracle-data:
