@@ -27,6 +27,37 @@ public class VehicleResource {
         return Response.ok(vehicles).build();
     }
 
+    @GET
+    @Path("/available")
+    public Response getAvailableVehicles() {
+
+        List<Vehicle> vehicles = vehicleService.getAvailable();
+
+        return Response.ok(vehicles).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response getVehicleById(@PathParam("id") Long id) {
+        //try-catch : on capture l’exception métier et on la traduit en code HTTP correct
+        try {
+            Vehicle vehicle = vehicleService.findById(id);
+            return Response.ok(vehicle).build();
+        } catch(BusinessException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Error : " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/search")
+    public Response searchByBrand(@QueryParam("brand") String brand) { // url : /api/vehicles/search?brand=..
+        List<Vehicle> vehicles = vehicleService.searchVehicles(brand);
+        return Response.ok(vehicles).build();
+    }
+
+
     @POST
     public Response createVehicle(Vehicle v) {
         try {
@@ -48,6 +79,22 @@ public class VehicleResource {
             Vehicle modified = vehicleService.updateVehicle(id, updated); //on délégue la logique métier au service
             return Response.ok(modified).build();
         } catch (BusinessException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Error : " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteVehicle(@PathParam("id") Long id) {
+        try {
+            vehicleService.deleteVehicle(id);
+            return Response.noContent().build();
+        } catch (BusinessException e) {
+            if (e.getMessage().contains("not found")) { // boucle if pr differencier erreurs 404 d'une erreur métier
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Error : " + e.getMessage())
                     .build();
