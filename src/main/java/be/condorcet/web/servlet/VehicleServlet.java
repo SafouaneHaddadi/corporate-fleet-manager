@@ -137,16 +137,23 @@ public class VehicleServlet extends HttpServlet {
 
     }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
-        if ("create".equals(action)) {
-              createVehicle(request, response);
-          } else {
-              response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-          }
-  }
+        switch (action) {
+            case "create":
+                createVehicle(request, response);
+                break;
+            case "delete":
+                deleteVehicle(request, response);
+                break;
+            default:
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
 
     protected void createVehicle(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -187,6 +194,28 @@ public class VehicleServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
                     .forward(request, response);
         }
+    }
+
+    protected void deleteVehicle(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing vehicle id");
+            return;
+        }
+        try {
+            Long id = Long.parseLong(idStr);
+            vehicleService.deleteVehicle(id);
+            response.sendRedirect(request.getContextPath() + "/vehicles?action=list");
+        } catch (NumberFormatException nfe) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Vehicle id must be numbers");
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
+                    .forward(request, response);
+        }
+
     }
 
   }
