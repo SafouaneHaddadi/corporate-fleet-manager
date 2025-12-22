@@ -1,6 +1,7 @@
 package be.condorcet.web.servlet;
 
 import be.condorcet.model.Vehicle;
+import be.condorcet.model.VehicleStatus;
 import be.condorcet.service.VehicleService;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -40,8 +41,13 @@ public class VehicleServlet extends HttpServlet {
                 case "search":
                     searchByBrand(request, response);
                     break;
+
                 case "view":
                    viewVehicle(request, response);
+                    break;
+
+                case "create":
+                    showCreateForm(request, response);
                     break;
 
                 default:
@@ -103,11 +109,13 @@ public class VehicleServlet extends HttpServlet {
 
     private void viewVehicle(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String idStr = request.getParameter("id");
         if (idStr == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing vehicle id");
             return;
         }
+
         Long id = Long.parseLong(idStr);
 
         Vehicle vehicle = vehicleService.findById(id);
@@ -120,12 +128,70 @@ public class VehicleServlet extends HttpServlet {
                 .forward(request, response);
     }
 
-}
+    private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        //redirige vers la page de form
+        request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
+                .forward(request, response);
+
+    }
+
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+
+        if ("create".equals(action)) {
+              createVehicle(request, response);
+          } else {
+              response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+          }
+  }
+
+    protected void createVehicle(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String brand = request.getParameter("brand");
+        String model = request.getParameter("model");
+        String licensePlate = request.getParameter("licensePlate");
+        String yearStr = request.getParameter("year");
+        String mileageStr = request.getParameter("mileage");
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setBrand(brand);
+        vehicle.setModel(model);
+        vehicle.setLicensePlate(licensePlate);
+
+        try {
+            if (yearStr != null && !yearStr.trim().isEmpty()) {
+                vehicle.setYear(Integer.parseInt(yearStr.trim()));
+            }
+
+            if (mileageStr != null && !mileageStr.trim().isEmpty()) {
+                vehicle.setMileage(Integer.parseInt(mileageStr.trim()));
+            }
+
+            vehicleService.createVehicle(vehicle);
+
+            response.sendRedirect(request.getContextPath() + "/vehicles?action=list");
+
+        } catch (NumberFormatException nfe) {
+            request.setAttribute("errorMessage", "Year and Mileage must be numbers");
+            request.setAttribute("vehicle", vehicle);
+            request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            request.setAttribute("vehicle", vehicle);
+            request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
+                    .forward(request, response);
+        }
+    }
+
+  }
 
 
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//
-//    }
 
 
 
