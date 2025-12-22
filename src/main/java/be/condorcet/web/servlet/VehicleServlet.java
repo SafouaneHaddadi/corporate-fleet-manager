@@ -40,9 +40,9 @@ public class VehicleServlet extends HttpServlet {
                 case "search":
                     searchByBrand(request, response);
                     break;
-//                case "view":
-//                    viewVehicle(request, response);
-//                    break;
+                case "view":
+                   viewVehicle(request, response);
+                    break;
 
                 default:
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action unknown");
@@ -98,6 +98,25 @@ public class VehicleServlet extends HttpServlet {
         request.setAttribute("brand", brand); //pr pre-remplir le forme
 
         request.getRequestDispatcher("/WEB-INF/jsp/vehicle/list.jsp")
+                .forward(request, response);
+    }
+
+    private void viewVehicle(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String idStr = request.getParameter("id");
+        if (idStr == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing vehicle id");
+            return;
+        }
+        Long id = Long.parseLong(idStr);
+
+        Vehicle vehicle = vehicleService.findById(id);
+        if (vehicle == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        request.setAttribute("vehicle", vehicle);
+
+        request.getRequestDispatcher("/WEB-INF/jsp/vehicle/view.jsp")
                 .forward(request, response);
     }
 
