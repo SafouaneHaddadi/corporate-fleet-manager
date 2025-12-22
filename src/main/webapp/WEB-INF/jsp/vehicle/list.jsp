@@ -94,6 +94,13 @@
     </a>
 </div>
 
+<form action = "${pageContext.request.contextPath}/vehicles" method = "get">
+    <input type="hidden" name="action" value="search" />
+    <input type="text" name="search" placeholder="Search by brand"
+           value="${brand != null ? brand: ''}"/> <!-- si on a déjà cherché qlq chose, ça pré-remplit -->
+    <input type="submit" value="Search"/>
+</form>
+
 <c:choose>
     <c:when test="${not empty vehicles}">
         <table>
