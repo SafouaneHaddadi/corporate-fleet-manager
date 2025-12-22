@@ -152,6 +152,11 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
+                            View details
+                        </a>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
