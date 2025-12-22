@@ -26,7 +26,8 @@ public class Vehicle {
     private Integer year;
     
     private Integer mileage;
-    
+
+    // la val de l’enum sera convertie en String dans la JSP
     @Enumerated(EnumType.STRING)
     private VehicleStatus status = VehicleStatus.AVAILABLE;
 }
