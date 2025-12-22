@@ -3,24 +3,92 @@
 <html>
 <head>
     <title>Vehicle Details</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .details {
+            background: white;
+            padding: 25px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            width: 400px;
+        }
+
+        .details p {
+            margin: 10px 0;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .available {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .maintenance {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .back {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 8px 14px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
+
 <body>
-<h1>Vehicle details</h1>
-<c:if test="${not empty vehicle}"> <!-- vehicle vient de la servlet-->
-    <p><strong> Brand:</strong> ${vehicle.brand}</p>
-    <p><strong>Model:</strong> ${vehicle.model}</p>
-    <p><strong>License Plate:</strong> ${vehicle.licensePlate}</p>
-    <p><strong>Year:</strong> ${vehicle.year}</p>
-    <p><strong>Mileage:</strong> ${vehicle.mileage} km</p>
-    <p><strong>Status:</strong>
-        <c:choose>
-        <c:when test="${vehicle.status == 'AVAILABLE'}">Available</c:when>
-        <c:when test="${vehicle.status == 'MAINTENANCE'}">Maintenance</c:when>
-            <c:otherwise>${vehicle.status}</c:otherwise>
-    </c:choose>
+
+<h1>Vehicle Details</h1>
+
+<c:if test="${not empty vehicle}">
+    <div class="details">
+        <p><span class="label">Brand:</span> ${vehicle.brand}</p>
+        <p><span class="label">Model:</span> ${vehicle.model}</p>
+        <p><span class="label">License Plate:</span> ${vehicle.licensePlate}</p>
+        <p><span class="label">Year:</span> ${vehicle.year}</p>
+        <p><span class="label">Mileage:</span> ${vehicle.mileage} km</p>
+        <p>
+            <span class="label">Status:</span>
+            <c:choose>
+                <c:when test="${vehicle.status == 'AVAILABLE'}">
+                    <span class="available">Available</span>
+                </c:when>
+                <c:when test="${vehicle.status == 'MAINTENANCE'}">
+                    <span class="maintenance">Maintenance</span>
+                </c:when>
+                <c:otherwise>
+                    ${vehicle.status}
+                </c:otherwise>
+            </c:choose>
+        </p>
+    </div>
 </c:if>
 
-<a href="${pageContext.request.contextPath}/vehicles?action=list">Back to list</a>
+<a class="back" href="${pageContext.request.contextPath}/vehicles?action=list">
+    ← Back to list
+</a>
 
 </body>
 </html>
