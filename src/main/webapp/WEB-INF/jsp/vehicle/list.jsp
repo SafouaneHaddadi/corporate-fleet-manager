@@ -112,6 +112,9 @@
     <a href="${pageContext.request.contextPath}/vehicles?action=list">
         All Vehicles
     </a>
+    <a href="${pageContext.request.contextPath}/vehicles?action=create">
+        Add Vehicle
+    </a>
 </div>
 
 <form  class="search-form" action="${pageContext.request.contextPath}/vehicles" method = "get">
