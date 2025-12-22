@@ -80,6 +80,26 @@
             background: #e9ecef;
             font-weight: bold;
         }
+
+        .search-form {
+            margin-top: 10px;
+        }
+
+        .search-form input[type=text] {
+            padding: 6px;
+            width: 200px;
+            border: 1px solid #ccc;
+        }
+
+        .search-form input[type=submit] {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -94,7 +114,7 @@
     </a>
 </div>
 
-<form action = "${pageContext.request.contextPath}/vehicles" method = "get">
+<form  class="search-form" action="${pageContext.request.contextPath}/vehicles" method = "get">
     <input type="hidden" name="action" value="search" />
     <input type="text" name="search" placeholder="Search by brand"
            value="${brand != null ? brand: ''}"/> <!-- si on a déjà cherché qlq chose, ça pré-remplit -->
