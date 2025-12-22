@@ -99,6 +99,15 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
 
     </style>
 </head>
@@ -111,6 +120,9 @@
     </a>
     <a href="${pageContext.request.contextPath}/vehicles?action=list">
         All Vehicles
+    </a>
+    <a href="${pageContext.request.contextPath}/vehicles?action=create">
+        Add Vehicle
     </a>
 </div>
 
@@ -156,6 +168,14 @@
                         <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
                             View details
                         </a>
+                        <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="delete"/>
+                            <input type="hidden" name="id" value="${v.id}"/>
+                            <input type="submit"
+                                   value="Delete"
+                                   class="delete-btn"
+                                   onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
+                        </form>
                     </td>
                 </tr>
             </c:forEach>
