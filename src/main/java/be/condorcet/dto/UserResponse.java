@@ -6,7 +6,7 @@ import lombok.Setter;
 
 //DTO pr controler ce que l'user reçoit
 
-public class LoginResponse {
+public class UserResponse {
 
     @Setter
     @Getter
@@ -16,7 +16,7 @@ public class LoginResponse {
     private String email;
     private UserRole role;
 
-    public LoginResponse(String username, String email, UserRole role) {
+    public UserResponse(String username, String email, UserRole role) {
         this.username = username;
         this.email = email;
         this.role = role;

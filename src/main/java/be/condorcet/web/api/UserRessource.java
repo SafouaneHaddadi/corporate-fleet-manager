@@ -27,17 +27,22 @@ public class UserRessource {
     public Response getAllUsers() {
         List<User> users = userService.getAllUsers();
 
-        return Response.ok(users).build();
-    }
+        //api stream
+        List<UserResponse> responses = users.stream()
+                .map(u -> new UserResponse(u.getUsername(), u.getEmail(), u.getRole()))
+                .toList();
 
+        return Response.ok(responses).build();
+    }
 
     @POST
     @Path("/register")
     public Response register(User user) {
         try {
             User created = userService.registerUser(user);
+            UserResponse response = new UserResponse(created.getUsername(), created.getEmail(), created.getRole());
             return Response.status(Response.Status.CREATED)
-                    .entity(created)
+                    .entity(response)
                     .build();
         } catch (BusinessException e) {
             return Response.status(Response.Status.BAD_REQUEST)
