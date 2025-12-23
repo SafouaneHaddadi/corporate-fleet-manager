@@ -1,16 +1,18 @@
 package be.condorcet.web.api;
 
 import be.condorcet.dto.LoginRequest;
-import be.condorcet.dto.LoginResponse;
+import be.condorcet.dto.UserResponse;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.model.User;
-import be.condorcet.model.UserRole;
 import be.condorcet.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestScoped
 @Path("/users") // Tous les endpoints seront sous /users
@@ -20,6 +22,14 @@ public class UserRessource {
 
     @Inject
     private UserService userService;
+
+    @GET
+    public Response getAllUsers() {
+        List<User> users = userService.getAllUsers();
+
+        return Response.ok(users).build();
+    }
+
 
     @POST
     @Path("/register")
@@ -42,7 +52,7 @@ public class UserRessource {
         try {
             User user = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
 
-            LoginResponse response = new LoginResponse(user.getUsername(), user.getEmail(), user.getRole());
+            UserResponse response = new UserResponse(user.getUsername(), user.getEmail(), user.getRole());
 
             return Response.ok(response).build();
         } catch (BusinessException e) {
