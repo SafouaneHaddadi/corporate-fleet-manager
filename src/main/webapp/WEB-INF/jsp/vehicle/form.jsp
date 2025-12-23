@@ -94,7 +94,7 @@
     <input type="text" name="model" value="${vehicle.model}"/><br/>
 
     License plate: <br/>
-    <input type="text" name="licensePlate" value="${vehicle.licensePlate}"/><br/>
+    <input type="text" name="licensePlate" value="${vehicle.licensePlate}" <c:if test="${vehicle.id != null}">readonly</c:if> /> <br/>
 
     Year: <br/>
     <input type="number" name="year" value="${vehicle.year}"/><br/>
