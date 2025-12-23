@@ -109,6 +109,15 @@
             margin-left: 8px;
         }
 
+        .edit-link {
+            padding: 4px 10px;
+            background: #ffc107;
+            color: #212529;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
@@ -176,6 +185,9 @@
                                    class="delete-btn"
                                    onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
                         </form>
+                        <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
+                            Edit
+                            </a>
                     </td>
                 </tr>
             </c:forEach>

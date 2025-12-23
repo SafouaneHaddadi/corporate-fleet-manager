@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Add a vehicle</title>
+    <title>Add/Edit a vehicle</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -63,14 +63,29 @@
     </style>
 </head>
 <body>
-<h1>Add a new vehicle</h1>
+
+<h1>
+    <c:choose>
+        <c:when test="${vehicle.id != null}">
+            Edit vehicle
+        </c:when>
+        <c:otherwise>
+            Add a new vehicle
+        </c:otherwise>
+    </c:choose>
+</h1>
 
 <c:if test="${not empty errorMessage}">
     <div class="error">${errorMessage}</div>
 </c:if>
 
 <form method="post" action="${pageContext.request.contextPath}/vehicles">
-    <input type="hidden" name="action" value="create"/>
+
+    <input type="hidden" name="action" value="${vehicle.id !=null ? 'update' : 'create'}"/>
+
+    <c:if test="${vehicle.id != null}">
+        <input type="hidden" name="id" value="${vehicle.id}"
+    </c:if>
 
     Brand: <br/>
     <input type="text" name="brand" value="${vehicle.brand}"/><br/>
@@ -79,7 +94,7 @@
     <input type="text" name="model" value="${vehicle.model}"/><br/>
 
     License plate: <br/>
-    <input type="text" name="licensePlate" value="${vehicle.licensePlate}"/><br/>
+    <input type="text" name="licensePlate" value="${vehicle.licensePlate}" <c:if test="${vehicle.id != null}">readonly</c:if> /> <br/>
 
     Year: <br/>
     <input type="number" name="year" value="${vehicle.year}"/><br/>

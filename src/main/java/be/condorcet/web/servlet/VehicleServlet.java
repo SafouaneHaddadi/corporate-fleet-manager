@@ -50,6 +50,10 @@ public class VehicleServlet extends HttpServlet {
                     showCreateForm(request, response);
                     break;
 
+                case "edit":
+                    showEditForm(request, response);
+                    break;
+
                 default:
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action unknown");
             }
@@ -57,6 +61,20 @@ public class VehicleServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String idStr = request.getParameter("id");
+        Long id = Long.parseLong(idStr);
+
+        Vehicle vehicle = vehicleService.findById(id);
+        if (vehicle == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Vehicle not found");
+            return;
+        }
+        request.setAttribute("vehicle", vehicle);
+        request.getRequestDispatcher("WEB-INF/jsp/vehicle/form.jsp").forward(request, response);
     }
 
     //la servlet filtre -> la jsp reçoit uniquement les véhicles dispo
@@ -149,6 +167,11 @@ public class VehicleServlet extends HttpServlet {
             case "delete":
                 deleteVehicle(request, response);
                 break;
+
+            case "update":
+                updateVehicle(request, response);
+                break;
+
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -217,6 +240,44 @@ public class VehicleServlet extends HttpServlet {
         }
 
     }
+
+    protected void updateVehicle(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String idStr = request.getParameter("id");
+        Long id =  Long.parseLong(idStr);
+        Vehicle vehicle = vehicleService.findById(id);
+        if (vehicle == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        vehicle.setBrand(request.getParameter("brand"));
+        vehicle.setModel(request.getParameter("model"));
+        vehicle.setLicensePlate(request.getParameter("licensePlate"));
+
+        String yearStr = request.getParameter("year");
+        if (yearStr !=null  && !yearStr.isBlank()) {
+            vehicle.setYear(Integer.parseInt(yearStr));
+        }
+
+        String mileageStr = request.getParameter("mileage");
+        if (mileageStr !=null && !mileageStr.isBlank()) {
+            vehicle.setMileage(Integer.parseInt(mileageStr));
+        }
+
+        try {
+            vehicleService.updateVehicle(id, vehicle);
+            response.sendRedirect(request.getContextPath() + "/vehicles?action=list");
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            request.setAttribute("vehicle", vehicle);
+            request.getRequestDispatcher("/WEB-INF/jsp/vehicle/form.jsp")
+                    .forward(request, response);
+        }
+
+    }
+
+
 
   }
 
