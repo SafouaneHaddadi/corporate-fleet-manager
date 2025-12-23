@@ -176,6 +176,9 @@
                                    class="delete-btn"
                                    onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
                         </form>
+                        <a href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
+                            Edit
+                            </a>
                     </td>
                 </tr>
             </c:forEach>
