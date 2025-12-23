@@ -170,6 +170,7 @@ public class VehicleServlet extends HttpServlet {
 
             case "update":
                 updateVehicle(request, response);
+                break;
 
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
