@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT_MINUTES=30
+TIMEOUT_MINUTES=180
 
 echo "=================================="
 echo "Session de développement Corporate Fleet Manager"
@@ -9,10 +9,16 @@ echo "=================================="
 
 # 1. Vérifie si les conteneurs tournent, sinon les démarre
 echo "Vérification des conteneurs..."
-if ! docker ps -q -f name=wildfly-local > /dev/null || ! docker ps -q -f name=oracle-local > /dev/null; then
-    echo "Démarrage des conteneurs..."
+
+# Récupère les IDs des conteneurs running
+WILDFLY_RUNNING=$(docker ps -q -f name=wildfly-local)
+ORACLE_RUNNING=$(docker ps -q -f name=oracle-local)
+
+if [ -z "$WILDFLY_RUNNING" ] || [ -z "$ORACLE_RUNNING" ]; then
+    echo "Un ou plusieurs conteneurs ne tournent pas → démarrage..."
     docker-compose up -d
-    sleep 10  # attente que tout soit prêt
+    sleep 15  # attente plus longue pour que tout soit vraiment prêt
+    echo "Conteneurs lancés"
 else
     echo "Conteneurs déjà en cours d'exécution"
 fi
@@ -30,7 +36,7 @@ echo "Compilation réussie"
 echo "Copie du nouveau WAR..."
 docker cp target/corporate-fleet-manager.war wildfly-local:/opt/jboss/wildfly/standalone/deployments/ROOT.war
 if [ $? -ne 0 ]; then
-    echo "Échec de la copie du WAR"
+    echo "Échec de la copie du WAR (container arrêté ?)"
     exit 1
 fi
 
@@ -42,7 +48,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-sleep 10  # temps pour que le reload finisse
+sleep 10
 
 echo ""
 echo "=== Logs du redeploy ==="
@@ -58,6 +64,7 @@ echo ""
     echo ""
     echo "Timeout de $TIMEOUT_MINUTES minutes atteint – arrêt des conteneurs..."
     docker-compose down
+    echo "Conteneurs arrêtés automatiquement."
 ) &
 
-echo "Session active – relance le script à chaque modification."
+echo "Session active – relance le script à chaque modification pour redéployer."
