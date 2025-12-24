@@ -5,6 +5,8 @@ import be.condorcet.dto.UserResponse;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.model.User;
 import be.condorcet.service.UserService;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequestScoped
-@Path("/users") // Tous les endpoints seront sous /users
+@Path("/users")
 @Produces(MediaType.APPLICATION_JSON) // On renvoie du JSON
 @Consumes(MediaType.APPLICATION_JSON) // On reçoit du JSON
 public class UserRessource {
@@ -24,6 +26,7 @@ public class UserRessource {
     private UserService userService;
 
     @GET
+    @RolesAllowed("MANAGER")
     public Response getAllUsers() {
         List<User> users = userService.getAllUsers();
 
@@ -37,6 +40,7 @@ public class UserRessource {
 
     @POST
     @Path("/register")
+    @PermitAll
     public Response register(User user) {
         try {
             User created = userService.registerUser(user);
@@ -53,6 +57,7 @@ public class UserRessource {
 
     @POST
     @Path("/login")
+    @PermitAll
     public Response login(LoginRequest loginRequest) {
         try {
             User user = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
