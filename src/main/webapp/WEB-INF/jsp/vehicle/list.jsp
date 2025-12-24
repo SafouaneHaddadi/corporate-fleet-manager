@@ -151,6 +151,14 @@
     <input type="submit" value="Search"/>
 </form>
 
+<c:if test="${not empty loggedUser}">
+    <div style="position: absolute; top: 10px; right: 20px;">
+        <a href="${pageContext.request.contextPath}/users?action=logout">
+            Logout
+        </a>
+    </div>
+</c:if>
+
 <c:if test="${empty loggedUser}">
     <div>
         <p>You are viewing the list of available vehicles.</p>

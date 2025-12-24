@@ -38,6 +38,10 @@ public class UserServlet extends HttpServlet {
                 showLoginForm(request, response);
                 break;
 
+            case "logout":
+                handleLogout(request, response);
+                break;
+
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -121,6 +125,15 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/user/register.jsp")
                     .forward(request, response);
         }
+    }
+
+    private void handleLogout(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        response.sendRedirect(request.getContextPath() + "/users?action=login");
     }
 }
 
