@@ -25,7 +25,7 @@ public class VehicleServlet extends HttpServlet {
         String action = request.getParameter("action"); //extrait le param action
 
         if (action == null || action.isEmpty()) {
-            action = "list";
+            action = "available";
         }
 
         try {
