@@ -118,16 +118,37 @@
             font-size: 14px;
         }
 
+        .manager-note {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #ffc107;
+        }
+        .manager-note p {
+            margin: 0;
+            font-style: italic;
+            color: #856404;
+        }
+
+
     </style>
 </head>
 <body>
 <h1>Vehicle Management</h1>
 
-<c:if test = "${not empty loggedUser}">
+<c:if test="${not empty loggedUser}">
     <p>
-        Welcome <strong>${loggedUser.username} !</strong>
-        (${loggedUser.role})
+        Welcome back, <strong>${loggedUser.username}!</strong>
     </p>
+
+    <c:if test="${loggedUser.role == 'MANAGER'}">
+        <div class="manager-note">
+            <p>
+                With great power comes great responsibility...<br>
+                Remember: A good manager leads by example.
+            </p>
+        </div>
+    </c:if>
 </c:if>
 
 <div class="menu">
