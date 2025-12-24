@@ -3,6 +3,7 @@ package be.condorcet.web.api;
 import be.condorcet.dto.ReservationResponse;
 import be.condorcet.dto.VehicleResponse;
 import be.condorcet.model.Reservation;
+import be.condorcet.dto.UserResponse;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.service.ReservationService;
 
@@ -58,32 +59,29 @@ public class ReservationRessource {
 
         try {
             String username = securityContext.getUserPrincipal().getName();
+
             Reservation created = reservationService.createReservation(r, username);
 
-            // pour personnaliser la réponse
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", created.getId());
-            response.put("startDate", created.getStartDate().toString()); // format ISO 8601 : 2025-03-10T09:00
-            response.put("endDate", created.getEndDate().toString());
-            response.put("reason", created.getReason());
-            response.put("status", created.getStatus().name());
+            VehicleResponse vehicleResponse = new VehicleResponse(
+                    created.getVehicle().getBrand(),
+                    created.getVehicle().getModel(),
+                    created.getVehicle().getLicensePlate()
+            );
 
-            // Véhicule
-            Map<String, Object> vehicleMap = new HashMap<>();
-            vehicleMap.put("brand", created.getVehicle().getBrand());
-            vehicleMap.put("model", created.getVehicle().getModel());
-            vehicleMap.put("licensePlate", created.getVehicle().getLicensePlate());
-            response.put("vehicle", vehicleMap);
+            String employee = created.getEmployee().getUsername();
 
-            // Employee
-            Map<String, Object> employeeMap = new HashMap<>();
-            employeeMap.put("id", created.getEmployee().getId());
-            employeeMap.put("username", created.getEmployee().getUsername());
-            employeeMap.put("role", created.getEmployee().getRole().name());
-            response.put("employee", employeeMap);
+            ReservationResponse reservationResponse = new ReservationResponse(
+                    created.getId(),
+                    created.getStartDate(),
+                    created.getEndDate(),
+                    created.getReason(),
+                    created.getStatus().name(),
+                    vehicleResponse,
+                    employee
+            );
 
             return Response.status(Response.Status.CREATED)
-                    .entity(response)
+                    .entity(reservationResponse)
                     .build();
 
         } catch (BusinessException e) {
@@ -92,5 +90,6 @@ public class ReservationRessource {
                     .build();
         }
     }
+
 
 }
