@@ -81,6 +81,13 @@
             <version>2.17.2</version>
         </dependency>
 
+        <!-- BCrypt pour le hashage des mots de passe -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
         <!-- JPA + Hibernate + Drivers -->
         <dependency>
             <groupId>jakarta.persistence</groupId>

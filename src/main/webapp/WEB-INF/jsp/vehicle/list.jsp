@@ -118,21 +118,51 @@
             font-size: 14px;
         }
 
+        .manager-note {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #ffc107;
+        }
+        .manager-note p {
+            margin: 0;
+            font-style: italic;
+            color: #856404;
+        }
+
+
     </style>
 </head>
 <body>
 <h1>Vehicle Management</h1>
 
+<c:if test="${not empty loggedUser}">
+    <p>
+        Welcome back, <strong>${loggedUser.username}!</strong>
+    </p>
+
+    <c:if test="${loggedUser.role == 'MANAGER'}">
+        <div class="manager-note">
+            <p>
+                With great power comes great responsibility...<br>
+                Remember: A good manager leads by example.
+            </p>
+        </div>
+    </c:if>
+</c:if>
+
 <div class="menu">
     <a href="${pageContext.request.contextPath}/vehicles?action=available">
         Available Vehicles
     </a>
-    <a href="${pageContext.request.contextPath}/vehicles?action=list">
-        All Vehicles
-    </a>
-    <a href="${pageContext.request.contextPath}/vehicles?action=create">
-        Add Vehicle
-    </a>
+    <c:if test="${loggedUser.role == 'MANAGER'}">
+        <a href="${pageContext.request.contextPath}/vehicles?action=list">
+            All Vehicles
+        </a>
+        <a href="${pageContext.request.contextPath}/vehicles?action=create">
+            Add Vehicle
+        </a>
+    </c:if>
 </div>
 
 <form  class="search-form" action="${pageContext.request.contextPath}/vehicles" method = "get">
@@ -141,6 +171,25 @@
            value="${brand != null ? brand: ''}"/> <!-- si on a déjà cherché qlq chose, ça pré-remplit -->
     <input type="submit" value="Search"/>
 </form>
+
+<c:if test="${not empty loggedUser}">
+    <div style="position: absolute; top: 10px; right: 20px;">
+        <a href="${pageContext.request.contextPath}/users?action=logout">
+            Logout
+        </a>
+    </div>
+</c:if>
+
+<c:if test="${empty loggedUser}">
+    <div>
+        <p>You are viewing the list of available vehicles.</p>
+        <p>
+            <a href="${pageContext.request.contextPath}/users?action=login">
+                Log in to view details and reserve a vehicle
+            </a>
+        </p>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty vehicles}">
@@ -174,20 +223,24 @@
                         </c:choose>
                     </td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
-                            View details
-                        </a>
-                        <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="delete"/>
-                            <input type="hidden" name="id" value="${v.id}"/>
-                            <input type="submit"
-                                   value="Delete"
-                                   class="delete-btn"
-                                   onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
-                        </form>
-                        <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
-                            Edit
+                        <c:if test="${not empty loggedUser}">
+                            <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
+                                View details
                             </a>
+                        </c:if>
+                        <c:if test="${loggedUser.role=='MANAGER'}">
+                            <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="delete"/>
+                                <input type="hidden" name="id" value="${v.id}"/>
+                                <input type="submit"
+                                       value="Delete"
+                                       class="delete-btn"
+                                       onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
+                            </form>
+                            <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
+                                Edit
+                            </a>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
