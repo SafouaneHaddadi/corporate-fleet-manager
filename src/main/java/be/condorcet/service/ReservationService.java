@@ -1,0 +1,69 @@
+package be.condorcet.service;
+
+import be.condorcet.dao.ReservationDAO;
+import be.condorcet.dao.UserDAO;
+import be.condorcet.dao.VehicleDAO;
+import be.condorcet.exception.BusinessException;
+import be.condorcet.model.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+@ApplicationScoped
+@Transactional
+public class ReservationService {
+
+    @Inject
+    private ReservationDAO reservationDAO;
+
+    @Inject
+    private VehicleDAO vehicleDAO;
+
+    @Inject
+    private UserDAO userDAO;
+
+    public Reservation createReservation(Reservation r, String connectUser) {
+
+        if (r.getStartDate() == null) {
+            throw new BusinessException("Start date is required");
+        }
+        if (r.getEndDate() == null) {
+            throw new BusinessException("End date is required");
+        }
+        if (!r.getEndDate().isAfter(r.getStartDate())) {
+            throw new BusinessException("End date must be after start date");
+        }
+        if (r.getReason() == null || r.getReason().isBlank()) {
+            throw new BusinessException("Reason is required");
+        }
+        if (r.getVehicle() == null || r.getVehicle().getId() == null) {
+            throw new BusinessException("Vehicle id is required");
+        }
+
+        Long vehicleId = r.getVehicle().getId();
+
+        Vehicle vehicle = vehicleDAO.findById(vehicleId);
+        if (vehicle == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        if (vehicle.getStatus() != VehicleStatus.AVAILABLE) {
+            throw new BusinessException("Vehicle not available");
+        }
+
+        if (reservationDAO.hasOverlapping(vehicleId, r.getStartDate(), r.getEndDate())) {
+            throw new BusinessException("This vehicle is already reserved for the requested period");
+        }
+
+        User employee = userDAO.findByUsername(connectUser)
+                .orElseThrow(() -> new BusinessException("Connected user not found"));
+
+        r.setVehicle(vehicle);
+        r.setEmployee(employee);
+        r.setStatus(ReservationStatus.PENDING);
+        r.setApprovedAt(null);
+        r.setApprovedBy(null);
+        r.setRefusalReason(null);
+
+        return reservationDAO.create(r);
+    }
+}
