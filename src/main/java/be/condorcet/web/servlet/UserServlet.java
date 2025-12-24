@@ -92,7 +92,7 @@ public class UserServlet extends HttpServlet {
 
             session.setAttribute("loggedUser", user); //on stocke l'user dans la session
 
-            response.sendRedirect(request.getContextPath() + "/vehicles?action=list");
+            response.sendRedirect(request.getContextPath() + "/vehicles?action=available");
 
         } catch (Exception e) {
 
