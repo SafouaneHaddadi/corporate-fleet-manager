@@ -10,6 +10,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Path("/reservations")
@@ -22,6 +23,14 @@ public class ReservationRessource {
 
     @Context
     private SecurityContext securityContext;
+
+    @GET
+    @RolesAllowed("MANAGER")
+    public Response getAllReservations() {
+        List<Reservation> reservations = reservationService.getAllReservations();
+        return Response.ok(reservations).build();
+    }
+
 
     @POST
     @RolesAllowed("EMPLOYEE")

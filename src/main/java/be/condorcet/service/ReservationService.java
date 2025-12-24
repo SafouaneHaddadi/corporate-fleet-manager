@@ -9,6 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 @ApplicationScoped
 @Transactional
 public class ReservationService {
@@ -21,6 +23,10 @@ public class ReservationService {
 
     @Inject
     private UserDAO userDAO;
+
+    public List<Reservation> getAllReservations() {
+        return reservationDAO.findAll();
+    }
 
     public Reservation createReservation(Reservation r, String connectUser) {
 
