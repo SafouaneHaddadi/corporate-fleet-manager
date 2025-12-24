@@ -1,5 +1,7 @@
 package be.condorcet.web.api;
 
+import be.condorcet.dto.ReservationResponse;
+import be.condorcet.dto.VehicleResponse;
 import be.condorcet.model.Reservation;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.service.ReservationService;
@@ -28,8 +30,26 @@ public class ReservationRessource {
     @RolesAllowed("MANAGER")
     public Response getAllReservations() {
         List<Reservation> reservations = reservationService.getAllReservations();
-        return Response.ok(reservations).build();
+
+        List<ReservationResponse> response = reservations.stream()
+                .map(r -> new ReservationResponse(
+                        r.getId(),
+                        r.getStartDate(),
+                        r.getEndDate(),
+                        r.getReason(),
+                        r.getStatus().name(),
+                        new VehicleResponse(
+                                r.getVehicle().getBrand(),
+                                r.getVehicle().getModel(),
+                                r.getVehicle().getLicensePlate()
+                        ),
+                        r.getEmployee() != null ? r.getEmployee().getUsername() : null
+                ))
+                .toList();
+
+        return Response.ok(response).build();
     }
+
 
 
     @POST
