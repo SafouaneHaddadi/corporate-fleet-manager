@@ -1,37 +1,44 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<!DOCTYPE html>
 <html>
 <head>
-    <title>Inscription</title>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial; margin: 40px;
+        }
+        .form input {
+            padding: 8px; margin: 5px 0; width: 250px;
+        }
+        .error {
+            color: red; margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px; margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
 <h2>Registration</h2>
 
 <c:if test="${not empty errorMessage}">
-    <p style="color:red">${errorMessage}</p>
+    <p class="error">${errorMessage}</p>
 </c:if>
 
-<form action="${pageContext.request.contextPath}/users" method="post">
-
+<form class="form" action="${pageContext.request.contextPath}/users" method="post">
     <input type="hidden" name="action" value="register">
 
-    <label>Username :</label><br>
-    <input type="text" name="username"
-           value="${user.username}">
-    <br><br>
+    <div>Username:</div>
+    <input type="text" name="username" value="${user.username}">
 
-    <label>Email :</label><br>
-    <input type="email" name="email"
-           value="${user.email}">
-    <br><br>
+    <div>Email:</div>
+    <input type="email" name="email" value="${user.email}">
 
-    <label>Password :</label><br>
+    <div>Password:</div>
     <input type="password" name="password">
-    <br><br>
 
+    <br>
     <button type="submit">Register</button>
 </form>
 
