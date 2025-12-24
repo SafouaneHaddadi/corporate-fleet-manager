@@ -1,5 +1,3 @@
-
-
 services:
   oracle:
     image: gvenzl/oracle-free:slim
@@ -27,10 +25,8 @@ services:
     ports:
       - "8180:8080"
       - "9990:9990"
-    volumes:
-      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war
-      # crée un fichier vide qui sera copié comme ROOT.war.dodeploy pour forcer le déploiement immédiat
-      - ./deploy-trigger:/opt/jboss/wildfly/standalone/deployments/ROOT.war.dodeploy:ro
+    #    volumes:
+    #      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war
     command: >
       /bin/bash -c "
       /opt/jboss/wildfly/bin/add-user.sh admin admin --silent &&
