@@ -30,7 +30,7 @@ public class VehicleResource {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({"MANAGER"})
+    @RolesAllowed({"EMPLOYEE", "MANAGER"})
     public Response getVehicleById(@PathParam("id") Long id) {
         try {
             Vehicle vehicle = vehicleService.findById(id);
