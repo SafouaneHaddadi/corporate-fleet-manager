@@ -24,6 +24,22 @@ public class ReservationService {
     @Inject
     private UserDAO userDAO;
 
+    public List<Reservation> getReservationsByStatus(String status) {
+        if (status == null || status.isBlank()) {
+            throw new BusinessException("status is required");
+        }
+
+        ReservationStatus reservationStatus;
+        try {
+            reservationStatus = ReservationStatus.valueOf(status.toUpperCase()); //convertit le string en enum
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException("Unknown status: " + status);
+        }
+
+        return reservationDAO.findByStatus(reservationStatus);
+    }
+
+
     public List<Reservation> getAllReservations() {
         return reservationDAO.findAll();
     }

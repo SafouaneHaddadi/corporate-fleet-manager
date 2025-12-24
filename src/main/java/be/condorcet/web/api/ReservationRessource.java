@@ -51,6 +51,19 @@ public class ReservationRessource {
         return Response.ok(response).build();
     }
 
+    @GET
+    @Path("/search")
+    @RolesAllowed("MANAGER")
+    public Response getReservationsByStatus(@QueryParam("status") String status) {
+        try {
+            List<Reservation> reservations = reservationService.getReservationsByStatus(status);
+            return Response.ok(reservations).build();
+        } catch (BusinessException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
 
 
     @POST
