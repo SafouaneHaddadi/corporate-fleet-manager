@@ -22,6 +22,12 @@ public class AuthFilter implements Filter {
         String path = req.getRequestURI();
         String action = req.getParameter("action");
 
+        boolean isApi = path.startsWith(req.getContextPath() + "/api/");
+        if (isApi) {
+            chain.doFilter(request, response); // laisse passer, AuthFilter JAX-RS gère
+            return;
+        }
+
         boolean isPublic =
                 path.endsWith("index.jsp") ||
                         path.equals(req.getContextPath() + "/") ||
