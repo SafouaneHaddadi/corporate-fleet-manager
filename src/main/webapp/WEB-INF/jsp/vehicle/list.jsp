@@ -123,16 +123,25 @@
 <body>
 <h1>Vehicle Management</h1>
 
+<c:if test = "${not empty loggedUser}">
+    <p>
+        Welcome <strong>${loggedUser.username} !</strong>
+        (${loggedUser.role})
+    </p>
+</c:if>
+
 <div class="menu">
     <a href="${pageContext.request.contextPath}/vehicles?action=available">
         Available Vehicles
     </a>
-    <a href="${pageContext.request.contextPath}/vehicles?action=list">
-        All Vehicles
-    </a>
-    <a href="${pageContext.request.contextPath}/vehicles?action=create">
-        Add Vehicle
-    </a>
+    <c:if test="${loggedUser.role == 'MANAGER'}">
+        <a href="${pageContext.request.contextPath}/vehicles?action=list">
+            All Vehicles
+        </a>
+        <a href="${pageContext.request.contextPath}/vehicles?action=create">
+            Add Vehicle
+        </a>
+    </c:if>
 </div>
 
 <form  class="search-form" action="${pageContext.request.contextPath}/vehicles" method = "get">
@@ -141,6 +150,17 @@
            value="${brand != null ? brand: ''}"/> <!-- si on a déjà cherché qlq chose, ça pré-remplit -->
     <input type="submit" value="Search"/>
 </form>
+
+<c:if test="${empty loggedUser}">
+    <div>
+        <p>You are viewing the list of available vehicles.</p>
+        <p>
+            <a href="${pageContext.request.contextPath}/users?action=login">
+                Log in to view details and reserve a vehicle
+            </a>
+        </p>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty vehicles}">
@@ -174,20 +194,24 @@
                         </c:choose>
                     </td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
-                            View details
-                        </a>
-                        <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
-                            <input type="hidden" name="action" value="delete"/>
-                            <input type="hidden" name="id" value="${v.id}"/>
-                            <input type="submit"
-                                   value="Delete"
-                                   class="delete-btn"
-                                   onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
-                        </form>
-                        <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
-                            Edit
+                        <c:if test="${not empty loggedUser}">
+                            <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
+                                View details
                             </a>
+                        </c:if>
+                        <c:if test="${loggedUser.role=='MANAGER'}">
+                            <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="delete"/>
+                                <input type="hidden" name="id" value="${v.id}"/>
+                                <input type="submit"
+                                       value="Delete"
+                                       class="delete-btn"
+                                       onclick="return confirm('Are you sure you want to delete this vehicle ?');"/>
+                            </form>
+                            <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
+                                Edit
+                            </a>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
