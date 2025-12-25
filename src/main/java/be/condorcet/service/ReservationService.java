@@ -44,6 +44,15 @@ public class ReservationService {
         return reservationDAO.findAll();
     }
 
+    public List<Reservation> getReservationsByUser(String username) {
+
+        User user = userDAO.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("User not found"));
+
+        return reservationDAO.findByEmployee(user);
+    }
+
+
     public Reservation createReservation(Reservation r, String connectUser) {
 
         if (r.getStartDate() == null) {
