@@ -51,26 +51,5 @@ public class ReservationDAOImpl extends GenericDAOImpl<Reservation, Long> implem
     }
 
 
-    @Override
-    public void approve(Long reservationId, User manager) {
-        Reservation r = em.find(Reservation.class, reservationId);
-        if (r != null) {
-            r.setStatus(ReservationStatus.APPROVED);
-            r.setApprovedBy(manager);
-            r.setApprovedAt(LocalDateTime.now());
-            em.merge(r);
-        }
-    }
 
-    @Override
-    public void decline(Long reservationId, User manager, String refusalReason) {
-        Reservation r = em.find(Reservation.class, reservationId);
-        if (r != null) {
-            r.setStatus(ReservationStatus.REFUSED);
-            r.setApprovedBy(manager);
-            r.setRefusalReason(refusalReason);
-            r.setApprovedAt(LocalDateTime.now());
-            em.merge(r);
-        }
-    }
 }

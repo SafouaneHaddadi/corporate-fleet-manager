@@ -15,7 +15,4 @@ public interface ReservationDAO extends GenericDAO<Reservation, Long> {
 
     List<Reservation> findByStatus(ReservationStatus status);
 
-    void approve(Long reservationId, User manager);
-
-    void decline(Long reservationId, User manager, String refusalReason);
 }
