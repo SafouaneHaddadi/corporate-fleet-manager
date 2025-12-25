@@ -54,13 +54,32 @@ public class ReservationRessource {
     @GET
     @Path("/search")
     @RolesAllowed("MANAGER")
-    public Response getReservationsByStatus(@QueryParam("status") String status) {
+    public Response getReservationsByStatus(@QueryParam("status") String statusParam) {
+
         try {
-            List<Reservation> reservations = reservationService.getReservationsByStatus(status);
-            return Response.ok(reservations).build();
-        } catch (BusinessException e) {
+            List<Reservation> reservations = reservationService.getReservationsByStatus(statusParam);
+
+            List<ReservationResponse> response = reservations.stream()
+                    .map(r -> new ReservationResponse(
+                            r.getId(),
+                            r.getStartDate(),
+                            r.getEndDate(),
+                            r.getReason(),
+                            r.getStatus().name(),
+                            new VehicleResponse(
+                                    r.getVehicle().getBrand(),
+                                    r.getVehicle().getModel(),
+                                    r.getVehicle().getLicensePlate()
+                            ),
+                            r.getEmployee().getUsername()
+                    ))
+                    .toList();
+
+            return Response.ok(response).build();
+
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
+                    .entity("Invalid reservation status")
                     .build();
         }
     }
