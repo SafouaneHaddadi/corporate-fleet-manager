@@ -30,6 +30,7 @@ public class ReservationRessource {
     @GET
     @RolesAllowed("MANAGER")
     public Response getAllReservations() {
+
         List<Reservation> reservations = reservationService.getAllReservations();
 
         List<ReservationResponse> response = reservations.stream()
@@ -122,6 +123,29 @@ public class ReservationRessource {
                     .build();
         }
     }
+
+    @PUT
+    @Path("/{id}/approve")
+    @RolesAllowed("MANAGER")
+    public Response approveReservation(@PathParam("id") Long id) {
+
+        String managerUsername = securityContext.getUserPrincipal().getName();
+
+        Reservation approved = reservationService.approveReservation(id, managerUsername);
+
+        ReservationResponse response = new ReservationResponse(
+                approved.getId(),
+                approved.getStartDate(),
+                approved.getEndDate(),
+                approved.getReason(),
+                approved.getStatus().name(),
+                null,
+                approved.getEmployee().getUsername()
+        );
+
+        return Response.ok(response).build();
+    }
+
 
 
 }

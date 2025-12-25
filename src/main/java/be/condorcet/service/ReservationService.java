@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
@@ -97,4 +98,37 @@ public class ReservationService {
 
         return reservationDAO.create(r);
     }
+
+    public Reservation approveReservation(Long id, String managerUsername) {
+
+        Reservation reservation = reservationDAO.findById(id);
+        if (reservation == null) {
+            throw new BusinessException("Reservation not found");
+        }
+
+        User manager = userDAO.findByUsername(managerUsername)
+                .orElseThrow(() -> new BusinessException("Manager not found"));
+
+
+        if (reservation.getStatus() == ReservationStatus.APPROVED) {
+            throw new BusinessException("Reservation is already approved");
+        }
+
+        if (reservationDAO.hasOverlapping(
+                reservation.getVehicle().getId(),
+                reservation.getStartDate(),
+                reservation.getEndDate())) {
+
+            throw new BusinessException("Vehicle already reserved on this period");
+        }
+
+
+
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setApprovedBy(manager);
+        reservation.setApprovedAt(LocalDateTime.now());
+
+        return reservationDAO.update(reservation);
+    }
+
 }
