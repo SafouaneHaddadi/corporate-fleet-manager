@@ -29,7 +29,7 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING; // par défaut EN_ATTENTE
 
-    @Column
+    @Column(nullable = false)
     private String refusalReason;
 
     @Column
