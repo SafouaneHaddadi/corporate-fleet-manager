@@ -146,6 +146,34 @@ public class ReservationRessource {
         return Response.ok(response).build();
     }
 
+    @PUT
+    @Path("/{id}/decline")
+    public Response declineReservation(@PathParam("id") Long id, String reason) {
+
+        String managerUsername = securityContext.getUserPrincipal().getName();
+
+        Reservation declined = reservationService.declineReservation(
+                id,
+                managerUsername,
+                reason
+        );
+
+        ReservationResponse response = new ReservationResponse(
+                declined.getId(),
+                declined.getStartDate(),
+                declined.getEndDate(),
+                declined.getReason(),
+                declined.getStatus().name(),
+                null,
+                declined.getEmployee().getUsername()
+        );
+
+        return Response.ok(response).build();
+    }
+
+
+
+
 
 
 }

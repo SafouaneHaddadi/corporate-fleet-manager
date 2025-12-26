@@ -109,7 +109,6 @@ public class ReservationService {
         User manager = userDAO.findByUsername(managerUsername)
                 .orElseThrow(() -> new BusinessException("Manager not found"));
 
-
         if (reservation.getStatus() == ReservationStatus.APPROVED) {
             throw new BusinessException("Reservation is already approved");
         }
@@ -118,11 +117,8 @@ public class ReservationService {
                 reservation.getVehicle().getId(),
                 reservation.getStartDate(),
                 reservation.getEndDate())) {
-
             throw new BusinessException("Vehicle already reserved on this period");
         }
-
-
 
         reservation.setStatus(ReservationStatus.APPROVED);
         reservation.setApprovedBy(manager);
@@ -130,5 +126,37 @@ public class ReservationService {
 
         return reservationDAO.update(reservation);
     }
+
+    public Reservation declineReservation(Long reservationId, String managerUsername, String reason) {
+
+        Reservation reservation = reservationDAO.findById(reservationId);
+        if (reservation == null) {
+            throw new BusinessException("Reservation not found");
+        }
+
+        if (reason == null || reason.isBlank()) {
+            throw new BusinessException("Refusal reason is required");
+        }
+
+        if (reservation.getStatus() == ReservationStatus.APPROVED) {
+            throw new BusinessException("Reservation is already approved");
+        }
+
+        if (reservation.getStatus() == ReservationStatus.REFUSED) {
+            throw new BusinessException("Reservation is already declined");
+        }
+
+        User manager = userDAO.findByUsername(managerUsername)
+                .orElseThrow(() -> new BusinessException("Manager not found"));
+
+        reservation.setStatus(ReservationStatus.REFUSED);
+        reservation.setApprovedBy(manager); //l'approbation signifie le refus ici
+        reservation.setApprovedAt(LocalDateTime.now());
+        reservation.setRefusalReason(reason);
+
+        return reservationDAO.update(reservation);
+    }
+
+
 
 }
