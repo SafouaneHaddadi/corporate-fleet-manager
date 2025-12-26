@@ -45,7 +45,8 @@ public class ReservationRessource {
                                 r.getVehicle().getModel(),
                                 r.getVehicle().getLicensePlate()
                         ),
-                        r.getEmployee() != null ? r.getEmployee().getUsername() : null
+                        r.getEmployee() != null ? r.getEmployee().getUsername() : null,
+                        r.getRefusalReason()
                 ))
                 .toList();
 
@@ -72,7 +73,8 @@ public class ReservationRessource {
                                     r.getVehicle().getModel(),
                                     r.getVehicle().getLicensePlate()
                             ),
-                            r.getEmployee().getUsername()
+                            r.getEmployee().getUsername(),
+                            r.getRefusalReason()
                     ))
                     .toList();
 
@@ -110,7 +112,8 @@ public class ReservationRessource {
                     created.getReason(),
                     created.getStatus().name(),
                     vehicleResponse,
-                    employee
+                    employee,
+                    created.getRefusalReason()
             );
 
             return Response.status(Response.Status.CREATED)
@@ -140,7 +143,8 @@ public class ReservationRessource {
                 approved.getReason(),
                 approved.getStatus().name(),
                 null,
-                approved.getEmployee().getUsername()
+                approved.getEmployee().getUsername(),
+                approved.getRefusalReason() //ne sera pas affiché dans la rep json
         );
 
         return Response.ok(response).build();
@@ -165,7 +169,8 @@ public class ReservationRessource {
                 declined.getReason(),
                 declined.getStatus().name(),
                 null,
-                declined.getEmployee().getUsername()
+                declined.getEmployee().getUsername(),
+                declined.getRefusalReason()
         );
 
         return Response.ok(response).build();

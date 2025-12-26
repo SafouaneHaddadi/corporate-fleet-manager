@@ -104,7 +104,8 @@ public class UserRessource {
                                 r.getVehicle().getModel(),
                                 r.getVehicle().getLicensePlate()
                         ),
-                        username  // l'employé connecté
+                        username,  // l'employé connecté,
+                        r.getRefusalReason()
                 ))
                 .toList();
 
