@@ -61,6 +61,13 @@ public class AuthFilter implements Filter {
                                         "edit".equals(action) ||
                                         "delete".equals(action) ||
                                         "list".equals(action)
+                        )
+                ||
+                        (
+                        path.contains("/reservations") &&
+                                ("list".equals(action) ||
+                                        "searchStatus".equals(action)
+                                )
                         );
 
         if(managerOnly && !"MANAGER".equals(role)) {
