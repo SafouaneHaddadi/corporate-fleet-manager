@@ -29,7 +29,7 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING; // par défaut EN_ATTENTE
 
-    @Column
+    @Column(nullable = false)
     private String refusalReason;
 
     @Column
@@ -37,7 +37,7 @@ public class Reservation {
 
     // champ pour le gestionnaire qui a validé
     @ManyToOne
-    @JoinColumn(name = "approved_by_id")
+    @JoinColumn(name = "approved_by_id", nullable = true)
     private User approvedBy;
 
     @ManyToOne     // Une réservation concerne un seul véhicule

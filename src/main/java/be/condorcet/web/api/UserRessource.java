@@ -1,17 +1,23 @@
 package be.condorcet.web.api;
 
 import be.condorcet.dto.LoginRequest;
+import be.condorcet.dto.ReservationResponse;
 import be.condorcet.dto.UserResponse;
+import be.condorcet.dto.VehicleResponse;
 import be.condorcet.exception.BusinessException;
+import be.condorcet.model.Reservation;
 import be.condorcet.model.User;
+import be.condorcet.service.ReservationService;
 import be.condorcet.service.UserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +30,12 @@ public class UserRessource {
 
     @Inject
     private UserService userService;
+
+    @Inject
+    private ReservationService reservationService;
+
+    @Context
+    private SecurityContext securityContext;
 
     @GET
     @RolesAllowed("MANAGER")
@@ -71,4 +83,33 @@ public class UserRessource {
                     .build();
         }
     }
+
+    @GET
+    @Path("/me/reservations")
+    @RolesAllowed("EMPLOYEE")
+    public Response getMyReservations() {
+        String username = securityContext.getUserPrincipal().getName();
+
+        List<Reservation> reservations = reservationService.getReservationsByUser(username);
+
+        List<ReservationResponse> response = reservations.stream()
+                .map(r -> new ReservationResponse(
+                        r.getId(),
+                        r.getStartDate(),
+                        r.getEndDate(),
+                        r.getReason(),
+                        r.getStatus().name(),
+                        new VehicleResponse(
+                                r.getVehicle().getBrand(),
+                                r.getVehicle().getModel(),
+                                r.getVehicle().getLicensePlate()
+                        ),
+                        username,  // l'employé connecté,
+                        r.getRefusalReason()
+                ))
+                .toList();
+
+        return Response.ok(response).build();
+    }
+
 }
