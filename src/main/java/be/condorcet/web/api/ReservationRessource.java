@@ -3,7 +3,7 @@ package be.condorcet.web.api;
 import be.condorcet.dto.ReservationResponse;
 import be.condorcet.dto.VehicleResponse;
 import be.condorcet.model.Reservation;
-import be.condorcet.dto.UserResponse;
+import be.condorcet.dto.DeclineRequest;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.service.ReservationService;
 
@@ -152,14 +152,15 @@ public class ReservationRessource {
 
     @PUT
     @Path("/{id}/decline")
-    public Response declineReservation(@PathParam("id") Long id, String reason) {
+    @RolesAllowed("MANAGER")
+    public Response declineReservation(@PathParam("id") Long id, DeclineRequest request) {
 
         String managerUsername = securityContext.getUserPrincipal().getName();
 
         Reservation declined = reservationService.declineReservation(
                 id,
                 managerUsername,
-                reason
+                request.getReason()
         );
 
         ReservationResponse response = new ReservationResponse(
@@ -175,6 +176,7 @@ public class ReservationRessource {
 
         return Response.ok(response).build();
     }
+
 
 
 
