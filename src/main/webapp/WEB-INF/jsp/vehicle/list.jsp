@@ -162,6 +162,9 @@
         <a href="${pageContext.request.contextPath}/vehicles?action=create">
             Add Vehicle
         </a>
+        <a href="${pageContext.request.contextPath}/reservations?action=list">
+            Manage Reservations
+        </a>
     </c:if>
 </div>
 
