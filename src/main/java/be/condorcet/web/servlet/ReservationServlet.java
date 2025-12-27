@@ -1,0 +1,83 @@
+package be.condorcet.web.servlet;
+
+import be.condorcet.model.Reservation;
+import be.condorcet.model.ReservationStatus;
+import be.condorcet.service.ReservationService;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet(name = "ReservationServlet", urlPatterns = {"/reservations"})
+public class ReservationServlet extends HttpServlet {
+
+    @Inject
+    private ReservationService reservationService;
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+
+        if (action == null || action.isBlank()) {
+            action = "list";
+        }
+
+        try {
+            switch (action) {
+
+                case "list":
+                    listAllReservations(request, response);
+                    break;
+
+                case "searchStatus":
+                    searchByStatus(request, response);
+                    break;
+
+                default:
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action");
+            }
+
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    private void listAllReservations(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        List<Reservation> reservations = reservationService.getAllReservations();
+
+        request.setAttribute("reservations", reservations);
+
+        request.getRequestDispatcher("/WEB-INF/jsp/reservation/list.jsp")
+                .forward(request, response);
+    }
+
+    private void searchByStatus(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String statusParam = request.getParameter("status");
+
+        List<Reservation> reservations;
+
+        if (statusParam != null && !statusParam.isBlank()) {
+            ReservationStatus status = ReservationStatus.valueOf(statusParam);
+            reservations = reservationService.getReservationsByStatus(String.valueOf(status));
+        } else {
+            reservations = reservationService.getAllReservations();
+        }
+
+        request.setAttribute("reservations", reservations);
+        request.setAttribute("status", statusParam);
+
+        request.getRequestDispatcher("/WEB-INF/jsp/reservation/list.jsp")
+                .forward(request, response);
+    }
+}
