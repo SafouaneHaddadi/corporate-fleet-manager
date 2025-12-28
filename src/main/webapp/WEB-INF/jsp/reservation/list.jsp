@@ -5,12 +5,23 @@
     <title>Reservations</title>
 </head>
 <body>
-<h1>Reservations</h1>
+<c:choose>
+    <c:when test="${my}">
+        <h1>My reservations</h1>
+    </c:when>
+    <c:otherwise>
+        <h1>All reservations</h1>
+    </c:otherwise>
+</c:choose>
 
 <div>
-    <a href="${pageContext.request.contextPath}/reservations?action=list"> All reservations </a>
+    <c:if test="${loggedUser.role == 'MANAGER'}">
+        <a href="${pageContext.request.contextPath}/reservations?action=list"> All reservations </a>
+    </c:if>
 </div>
 
+<br/>
+<c:if test="${loggedUser.role == 'MANAGER'}">
 <form action="${pageContext.request.contextPath}/reservations" method="get">
     <input type="hidden" name="action" value="searchStatus"/>
     <label>Status :</label>
@@ -22,30 +33,30 @@
     </select>
     <input type="submit" value="Search"/>
 </form>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty reservations}">
         <table border="1">
             <tr>
                 <th>Vehicle</th>
-                <th>Employee</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Reason</th>
                 <th>Status</th>
-                <th>Refusal Reason</th>
             </tr>
             <c:forEach var="r" items="${reservations}">
                 <tr>
                     <td>
                             ${r.vehicle.brand} ${r.vehicle.model} (${r.vehicle.licensePlate})
                     </td>
-                    <td>${r.employee.username}</td>
                     <td>${r.startDate}</td>
                     <td>${r.endDate}</td>
-                    <td>${r.status}</td>
+                    <td>${r.reason}</td>
                     <td>
-                        <c:if test="${not empty r.refusalReason}">
-                            ${r.refusalReason}
+                            ${r.status}
+                        <c:if test="${r.status == 'REFUSED' && not empty r.refusalReason}">
+                            <br><strong>Refused for:</strong> ${r.refusalReason}
                         </c:if>
                     </td>
                 </tr>
@@ -57,8 +68,9 @@
     </c:otherwise>
 </c:choose>
 
-<a href="${pageContext.request.contextPath}/vehicles?action=list">
-    Return
+<br/>
+<a href="${pageContext.request.contextPath}/vehicles?action=available">
+    Return to the list of vehicles
 </a>
 
 </body>
