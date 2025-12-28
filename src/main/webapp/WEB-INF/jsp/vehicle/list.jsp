@@ -130,6 +130,16 @@
             color: #856404;
         }
 
+        .reserve-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
 
     </style>
 </head>
@@ -235,7 +245,7 @@
                             <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
                                 View details
                             </a>
-                            <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}">
+                            <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}" class="reserve-btn">
                                 Reserve
                             </a>
                         </c:if>

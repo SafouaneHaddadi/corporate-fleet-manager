@@ -135,11 +135,6 @@ public class ReservationServlet extends HttpServlet {
 
         Vehicle vehicle = vehicleService.findById(vehicleId);
 
-        if (vehicle == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Vehicle not found");
-            return;
-        }
-
         request.setAttribute("vehicle", vehicle);
 
         request.getRequestDispatcher("/WEB-INF/jsp/reservation/form.jsp")
