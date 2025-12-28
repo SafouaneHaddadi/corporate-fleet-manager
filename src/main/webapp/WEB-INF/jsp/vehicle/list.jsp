@@ -166,6 +166,11 @@
             Manage Reservations
         </a>
     </c:if>
+    <c:if test="${loggedUser.role == 'EMPLOYEE'}">
+        <a href="${pageContext.request.contextPath}/reservations?action=my">
+            My Reservations
+        </a>
+    </c:if>
 </div>
 
 <form  class="search-form" action="${pageContext.request.contextPath}/vehicles" method = "get">
