@@ -235,6 +235,9 @@
                             <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
                                 View details
                             </a>
+                            <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}">
+                                Reserve
+                            </a>
                         </c:if>
                         <c:if test="${loggedUser.role=='MANAGER'}">
                             <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
