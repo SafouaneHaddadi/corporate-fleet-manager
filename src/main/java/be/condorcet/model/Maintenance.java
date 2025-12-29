@@ -19,11 +19,9 @@ public class Maintenance {
     @Column(nullable = false)
     private LocalDateTime startDate;
 
-    @Column(nullable = false)
-    private LocalDateTime plannedEndDate;
 
-    @Column
-    private LocalDateTime actualEndDate;
+    @Column(nullable = false)
+    private LocalDateTime endDate;
 
     @Column(nullable = false, length = 500)
     private String description;
