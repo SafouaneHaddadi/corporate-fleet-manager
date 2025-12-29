@@ -130,6 +130,16 @@
             color: #856404;
         }
 
+        .reserve-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
 
     </style>
 </head>
@@ -161,6 +171,14 @@
         </a>
         <a href="${pageContext.request.contextPath}/vehicles?action=create">
             Add Vehicle
+        </a>
+        <a href="${pageContext.request.contextPath}/reservations?action=list">
+            Manage Reservations
+        </a>
+    </c:if>
+    <c:if test="${loggedUser.role == 'EMPLOYEE'}">
+        <a href="${pageContext.request.contextPath}/reservations?action=my">
+            My Reservations
         </a>
     </c:if>
 </div>
@@ -226,6 +244,9 @@
                         <c:if test="${not empty loggedUser}">
                             <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
                                 View details
+                            </a>
+                            <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}" class="reserve-btn">
+                                Reserve
                             </a>
                         </c:if>
                         <c:if test="${loggedUser.role=='MANAGER'}">
