@@ -30,6 +30,7 @@ public class MaintenanceRessource {
     }
 
     @GET
+    @RolesAllowed("MANAGER")
     public Response getAll() {
         return Response.ok(maintenanceService.getAllMaintenances()).build();
     }
