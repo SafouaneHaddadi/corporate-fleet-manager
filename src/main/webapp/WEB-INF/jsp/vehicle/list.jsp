@@ -175,6 +175,9 @@
         <a href="${pageContext.request.contextPath}/reservations?action=list">
             Manage Reservations
         </a>
+        <a href="${pageContext.request.contextPath}/maintenances?action=list">
+            All maintenances
+        </a>
     </c:if>
     <c:if test="${loggedUser.role == 'EMPLOYEE'}">
         <a href="${pageContext.request.contextPath}/reservations?action=my">
@@ -260,6 +263,9 @@
                             </form>
                             <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
                                 Edit
+                            </a>
+                            <a href="${pageContext.request.contextPath}/maintenances?action=create&vehicleId=${v.id}">
+                                Create maintenance
                             </a>
                         </c:if>
                     </td>
