@@ -157,6 +157,21 @@ public class ReservationService {
         return reservationDAO.update(reservation);
     }
 
+    public Reservation cancelApprovedReservation(Long reservationId) {
+        Reservation reservation = reservationDAO.findById(reservationId);
+        if (reservation == null) {
+            throw new BusinessException("Reservation not found");
+        }
+        if (reservation.getStatus() != ReservationStatus.APPROVED) {
+            throw new BusinessException("Only APPROVED reservations can be cancelled by the manager");
+        }
+
+        reservation.setStatus(ReservationStatus.REFUSED);
+        reservation.setRefusalReason("Cancelled by manager due to unplanned maintenance");
+
+        return reservationDAO.update(reservation);
+    }
+
 
 
 }
