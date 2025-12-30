@@ -68,7 +68,12 @@ public class AuthFilter implements Filter {
                                 ("list".equals(action) ||
                                         "searchStatus".equals(action)
                                 )
-                        );
+                        )
+               || (
+                       path.contains("maintenances") &&
+                               ("list".equals(action) ||
+                                       "create".equals(action)
+                        ));
 
         if(managerOnly && !"MANAGER".equals(role)) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied !");
