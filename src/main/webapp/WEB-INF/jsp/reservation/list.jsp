@@ -72,10 +72,6 @@
 </c:choose>
 
 <div style="text-align: center; margin-bottom: 20px;">
-    <c:if test="${loggedUser.role == 'MANAGER'}">
-        <a href="${pageContext.request.contextPath}/reservations?action=list">All reservations</a>
-    </c:if>
-    <a href="${pageContext.request.contextPath}/reservations?action=my">My reservations</a>
 </div>
 
 <c:if test="${loggedUser.role == 'MANAGER'}">
