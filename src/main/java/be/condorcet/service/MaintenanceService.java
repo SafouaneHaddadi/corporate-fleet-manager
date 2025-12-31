@@ -74,15 +74,6 @@ public class MaintenanceService {
         return created;
     }
 
-    public List<Vehicle> findAvailableVehiclesForPeriod(LocalDateTime start, LocalDateTime end) {
-
-        List<Vehicle> candidates = vehicleDAO.findAvailableVehicles();
-
-        return candidates.stream()
-                .filter(v -> !reservationDAO.hasOverlapping(v.getId(), start, end))
-                .toList();
-    }
-
 
 
 }
