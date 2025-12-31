@@ -25,6 +25,14 @@ public class ReservationService {
     @Inject
     private UserDAO userDAO;
 
+    public Reservation findById(Long id) {
+        Reservation r = reservationDAO.findById(id);
+        if (r == null) {
+            throw new BusinessException("Reservation not found with id " + id);
+        }
+        return r;
+    }
+
     public List<Reservation> getReservationsByStatus(String status) {
         if (status == null || status.isBlank()) {
             throw new BusinessException("status is required");
@@ -171,6 +179,16 @@ public class ReservationService {
 
         return reservationDAO.update(reservation);
     }
+
+    public List<Vehicle> findAvailableVehiclesForPeriod(LocalDateTime start, LocalDateTime end) {
+
+        List<Vehicle> candidates = vehicleDAO.findAvailableVehicles();
+
+        return candidates.stream()
+                .filter(v -> !reservationDAO.hasOverlapping(v.getId(), start, end))
+                .toList();
+    }
+
 
 
 
