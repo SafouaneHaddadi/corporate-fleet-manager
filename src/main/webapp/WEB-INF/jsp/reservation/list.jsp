@@ -124,6 +124,9 @@
                                 ${r.status}
                             </c:otherwise>
                         </c:choose>
+                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'APPROVED'}">
+                            <a href="${pageContext.request.contextPath}/reservations?action=cancel&id=${r.id}" onclick="return confirm('Are you sure you want to cancel this reservation ?');">Cancel</a>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
