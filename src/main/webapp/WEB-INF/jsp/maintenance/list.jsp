@@ -3,6 +3,34 @@
 <html>
 <head>
     <title>All Maintenances</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #343a40;
+            color: white;
+        }
+        .back {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
 
 </head>
 <body>
@@ -32,7 +60,7 @@
     </c:otherwise>
 </c:choose>
 
-<div>
+<div class="back">
     <a href="${pageContext.request.contextPath}/vehicles?action=list">
          Back to vehicles
     </a>
