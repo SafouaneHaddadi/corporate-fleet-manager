@@ -174,7 +174,7 @@ public class ReservationService {
             throw new BusinessException("Only APPROVED reservations can be cancelled by the manager");
         }
 
-        reservation.setStatus(ReservationStatus.REFUSED);
+        reservation.setStatus(ReservationStatus.CANCELLED);
         reservation.setRefusalReason("Cancelled by manager due to unplanned maintenance");
 
         return reservationDAO.update(reservation);
