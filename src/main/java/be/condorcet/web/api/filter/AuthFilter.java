@@ -66,9 +66,12 @@ public class AuthFilter implements Filter {
                         (
                         path.contains("/reservations") &&
                                 ("list".equals(action) ||
-                                        "searchStatus".equals(action)
+                                        "searchStatus".equals(action) ||
+                                        "approve".equals(action) ||
+                                        "declineForm".equals(action) || "decline".equals(action)
                                 )
-                        )
+                                )
+
                || (
                        path.contains("maintenances") &&
                                ("list".equals(action) ||
