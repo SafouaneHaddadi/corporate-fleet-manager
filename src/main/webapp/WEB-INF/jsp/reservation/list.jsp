@@ -201,7 +201,7 @@
                                 ${r.status}
                             </c:otherwise>
                         </c:choose>
-                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'PENDING'}">
+                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'PENDING' && r.vehicle.status != 'MAINTENANCE'}">
                             <form action="${pageContext.request.contextPath}/reservations" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="approve"/>
                                 <input type="hidden" name="id" value="${r.id}"/>
