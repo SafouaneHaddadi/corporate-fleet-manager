@@ -58,6 +58,33 @@
             text-align: center;
             margin: 20px 0;
         }
+        .approval-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #28a745;
+        }
+        .refusal-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #dc3545;
+        }
+        .reason-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -125,11 +152,29 @@
                             </c:when>
                             <c:when test="${r.status == 'APPROVED'}">
                                 <span class="approved">${r.status}</span>
+                                <c:if test="${not empty r.approvedBy}">
+                                    <div class="approval-info">
+                                        <strong>Approved by:</strong> ${r.approvedBy.username}
+                                        <c:if test="${not empty r.approvedAt}">
+                                            <br/><strong>When:</strong> ${r.approvedAt}
+                                        </c:if>
+                                    </div>
+                                </c:if>
                             </c:when>
                             <c:when test="${r.status == 'REFUSED'}">
                                 <span class="refused">${r.status}</span>
-                                <c:if test="${not empty r.refusalReason}">
-                                    <span class="refusal">Refused for: ${r.refusalReason}</span>
+                                <c:if test="${not empty r.approvedBy}">
+                                    <div class="refusal-info">
+                                        <strong>✗ Refused by:</strong> ${r.approvedBy.username}
+                                        <c:if test="${not empty r.approvedAt}">
+                                            <br/><strong>When:</strong> ${r.approvedAt}
+                                        </c:if>
+                                        <c:if test="${not empty r.refusalReason}">
+                                            <div class="reason-box">
+                                                <strong>Reason:</strong> "${r.refusalReason}"
+                                            </div>
+                                        </c:if>
+                                    </div>
                                 </c:if>
                             </c:when>
                             <c:otherwise>
