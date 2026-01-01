@@ -197,6 +197,24 @@
                                     </div>
                                 </c:if>
                             </c:when>
+                            <c:when test="${r.status == 'CANCELLED'}">
+                                <span class="refused">${r.status}</span>
+                                <c:if test="${not empty r.approvedBy}">
+                                    <div class="refusal-info">
+                                        <strong>Cancelled by:</strong> ${r.approvedBy.username}
+                                        <c:if test="${not empty r.approvedAt}">
+                                            <br/><strong>When:</strong>
+                                            <fmt:parseDate value="${r.approvedAt}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedApprovedAt" />
+                                            <fmt:formatDate value="${parsedApprovedAt}" pattern="dd/MM/yyyy HH:mm" />
+                                        </c:if>
+                                        <c:if test="${not empty r.refusalReason}">
+                                            <div class="reason-box">
+                                                <strong>Reason:</strong> "${r.refusalReason}"
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </c:if>
+                            </c:when>
                             <c:otherwise>
                                 ${r.status}
                             </c:otherwise>
