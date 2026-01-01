@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
     <title>Reservations</title>
@@ -142,8 +143,14 @@
                     <td>
                             ${r.vehicle.brand} ${r.vehicle.model} (${r.vehicle.licensePlate})
                     </td>
-                    <td>${r.startDate}</td>
-                    <td>${r.endDate}</td>
+                    <td>
+                        <fmt:parseDate value="${r.startDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedStartDate" />
+                        <fmt:formatDate value="${parsedStartDate}" pattern="dd/MM/yyyy HH:mm" />
+                    </td>
+                    <td>
+                        <fmt:parseDate value="${r.endDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedEndDate" />
+                        <fmt:formatDate value="${parsedEndDate}" pattern="dd/MM/yyyy HH:mm" />
+                    </td>
                     <td>${r.reason}</td>
                     <td>
                         <c:choose>
@@ -156,7 +163,9 @@
                                     <div class="approval-info">
                                         <strong>Approved by:</strong> ${r.approvedBy.username}
                                         <c:if test="${not empty r.approvedAt}">
-                                            <br/><strong>When:</strong> ${r.approvedAt}
+                                            <br/><strong>When:</strong>
+                                            <fmt:parseDate value="${r.approvedAt}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedApprovedAt" />
+                                            <fmt:formatDate value="${parsedApprovedAt}" pattern="dd/MM/yyyy HH:mm" />
                                         </c:if>
                                     </div>
                                 </c:if>
@@ -167,7 +176,9 @@
                                     <div class="refusal-info">
                                         <strong>✗ Refused by:</strong> ${r.approvedBy.username}
                                         <c:if test="${not empty r.approvedAt}">
-                                            <br/><strong>When:</strong> ${r.approvedAt}
+                                            <br/><strong>When:</strong>
+                                            <fmt:parseDate value="${r.approvedAt}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedApprovedAt" />
+                                            <fmt:formatDate value="${parsedApprovedAt}" pattern="dd/MM/yyyy HH:mm" />
                                         </c:if>
                                         <c:if test="${not empty r.refusalReason}">
                                             <div class="reason-box">
