@@ -160,6 +160,11 @@
                         <c:choose>
                             <c:when test="${r.status == 'PENDING'}">
                                 <span class="pending">${r.status}</span>
+                                <c:if test="${r.vehicle.status == 'MAINTENANCE'}">
+                                    <div>
+                                        ⚠️ This vehicle is currently in maintenance.
+                                    </div>
+                                </c:if>
                             </c:when>
                             <c:when test="${r.status == 'APPROVED'}">
                                 <span class="approved">${r.status}</span>
