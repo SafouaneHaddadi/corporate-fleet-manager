@@ -40,15 +40,19 @@
         tr:hover {
             background-color: #f5f5f5;
         }
-        .pending { color: #e67e22; font-weight: bold; }
-        .approved { color: #27ae60; font-weight: bold; }
-        .refused { color: #c0392b; font-weight: bold; }
-        .refusal {
-            color: #c0392b;
-            font-style: italic;
-            display: block;
-            margin-top: 5px;
+        .pending {
+            color: #e67e22;
+            font-weight: bold;
         }
+        .approved {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .refused {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
         .back {
             display: block;
             text-align: center;

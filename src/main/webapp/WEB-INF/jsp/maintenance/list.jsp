@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
     <title>All Maintenances</title>
@@ -48,8 +49,14 @@
             <c:forEach var="m" items="${maintenances}">
                 <tr>
                     <td>${m.vehicle.brand} ${m.vehicle.model} (${m.vehicle.licensePlate})</td>
-                    <td>${m.startDate}</td>
-                    <td>${m.endDate}</td>
+                    <td>
+                        <fmt:parseDate value="${m.startDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedStartDate" />
+                        <fmt:formatDate value="${parsedStartDate}" pattern="dd/MM/yyyy HH:mm" />
+                    </td>
+                    <td>
+                        <fmt:parseDate value="${m.endDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedEndDate" />
+                        <fmt:formatDate value="${parsedEndDate}" pattern="dd/MM/yyyy HH:mm" />
+                    </td>
                     <td>${m.description}</td>
                 </tr>
             </c:forEach>
