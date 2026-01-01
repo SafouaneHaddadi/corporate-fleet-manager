@@ -189,6 +189,51 @@ public class ReservationService {
                 .toList();
     }
 
+    public Reservation createAndApproveReservation(Reservation r, String employeeUsername, String managerUsername) {
+        if (r.getStartDate() == null) {
+            throw new BusinessException("Start date is required");
+        }
+        if (r.getEndDate() == null) {
+            throw new BusinessException("End date is required");
+        }
+        if (!r.getEndDate().isAfter(r.getStartDate())) {
+            throw new BusinessException("End date must be after start date");
+        }
+        if (r.getReason() == null || r.getReason().isBlank()) {
+            throw new BusinessException("Reason is required");
+        }
+        if (r.getVehicle() == null || r.getVehicle().getId() == null) {
+            throw new BusinessException("Vehicle id is required");
+        }
+
+        Long vehicleId = r.getVehicle().getId();
+        Vehicle vehicle = vehicleDAO.findById(vehicleId);
+        if (vehicle == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        if (vehicle.getStatus() != VehicleStatus.AVAILABLE) {
+            throw new BusinessException("Vehicle not available");
+        }
+        if (reservationDAO.hasOverlapping(vehicleId, r.getStartDate(), r.getEndDate())) {
+            throw new BusinessException("This vehicle is already reserved for the requested period");
+        }
+
+        User employee = userDAO.findByUsername(employeeUsername)
+                .orElseThrow(() -> new BusinessException("Employee not found"));
+
+        User manager = userDAO.findByUsername(managerUsername)
+                .orElseThrow(() -> new BusinessException("Manager not found"));
+
+        r.setVehicle(vehicle);
+        r.setEmployee(employee);
+        r.setStatus(ReservationStatus.APPROVED);
+        r.setApprovedBy(manager);
+        r.setApprovedAt(LocalDateTime.now());
+        r.setRefusalReason(null);
+
+        return reservationDAO.create(r);
+    }
+
 
 
 
