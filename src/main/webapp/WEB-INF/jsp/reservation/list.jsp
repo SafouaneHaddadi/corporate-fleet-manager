@@ -62,6 +62,18 @@
 </head>
 <body>
 
+<c:if test="${not empty successMessage}">
+    <div style="background:#d4edda; color:#155724;">
+        ${successMessage}
+    </div>
+</c:if>
+
+<c:if test="${not empty errorMessage}">
+    <div style="background:#f8d7da; color:#721c24;">
+         ${errorMessage}
+    </div>
+</c:if>
+
 <c:choose>
     <c:when test="${my}">
         <h1>My reservations</h1>
@@ -124,6 +136,19 @@
                                 ${r.status}
                             </c:otherwise>
                         </c:choose>
+                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'PENDING'}">
+                            <form action="${pageContext.request.contextPath}/reservations" method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="approve"/>
+                                <input type="hidden" name="id" value="${r.id}"/>
+                                <input type="submit" value="Approve"/>
+                            </form>
+
+                            <form action="${pageContext.request.contextPath}/reservations" method="get" style="display:inline;">
+                                <input type="hidden" name="action" value="declineForm"/>
+                                <input type="hidden" name="id" value="${r.id}"/>
+                                <input type="submit" value="Decline"/>
+                            </form>
+                        </c:if>
                         <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'APPROVED'}">
                             <a href="${pageContext.request.contextPath}/reservations?action=cancel&id=${r.id}" onclick="return confirm('Are you sure you want to cancel this reservation ?');">Cancel</a>
                         </c:if>
