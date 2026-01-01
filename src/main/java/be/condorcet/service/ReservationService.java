@@ -121,6 +121,11 @@ public class ReservationService {
             throw new BusinessException("Reservation is already approved");
         }
 
+        Vehicle vehicle = reservation.getVehicle();
+        if (vehicle.getStatus() == VehicleStatus.MAINTENANCE) {
+            throw new BusinessException("Cannot approve: vehicle is currently in maintenance");
+        }
+
         if (reservationDAO.hasOverlapping(
                 reservation.getVehicle().getId(),
                 reservation.getStartDate(),
