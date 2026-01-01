@@ -68,6 +68,8 @@ public class AuthFilter implements Filter {
                                 ("list".equals(action) ||
                                         "searchStatus".equals(action) ||
                                         "approve".equals(action) ||
+                                        "cancel".equals(action) ||
+                                        "assignReplacement".equals(action) ||
                                         "declineForm".equals(action) || "decline".equals(action)
                                 )
                                 )
