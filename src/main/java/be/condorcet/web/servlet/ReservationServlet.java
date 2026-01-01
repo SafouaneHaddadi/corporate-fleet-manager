@@ -57,6 +57,9 @@ public class ReservationServlet extends HttpServlet {
                     showCreateForm(request, response);
                     break;
 
+                case "declineForm":
+                    showDeclineForm(request, response);
+                    break;
 
                 default:
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action");
@@ -152,10 +155,20 @@ public class ReservationServlet extends HttpServlet {
                 createReservation(request, response);
                 break;
 
+            case "approve":
+                approveReservation(request, response);
+                break;
+
+            case "decline":
+                declineReservation(request, response);
+                break;
+
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+
+
 
     private void createReservation(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -203,4 +216,74 @@ public class ReservationServlet extends HttpServlet {
     }
 
 
-}
+    private void showDeclineForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            Reservation reservation = reservationService.findById(id);
+
+            if (reservation == null || reservation.getStatus() != ReservationStatus.PENDING) {
+                throw new BusinessException("Cannot decline: reservation not found or not pending");
+            }
+
+            request.setAttribute("reservation", reservation);
+            request.getRequestDispatcher("/WEB-INF/jsp/reservation/decline.jsp")
+                    .forward(request, response);
+
+        } catch (BusinessException e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response); //l'user retourne à la liste avec l'erreur
+        }
+    }
+
+    private void approveReservation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            User loggedUser = (User) request.getSession().getAttribute("loggedUser");
+            String managerUsername = loggedUser.getUsername();
+
+            reservationService.approveReservation(id, managerUsername);
+
+            request.setAttribute("successMessage", "Reservation #" + id + " approved");
+            listAllReservations(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response); //l'user est redigié vers la liste avec le msg de succes
+        }
+
+    }
+
+    private void declineReservation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            String reason = request.getParameter("reason");
+
+            if (reason == null || reason.isBlank()) {
+                throw new BusinessException("Reason is required to decline a reservation");
+            }
+
+            User loggedUser = (User) request.getSession().getAttribute("loggedUser");
+            String managerUsername = loggedUser.getUsername();
+
+            reservationService.declineReservation(id, managerUsername, reason);
+
+            request.setAttribute("successMessage", "Reservation #" + id + " declined");
+            listAllReservations(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            //listAllReservations(request, response);
+            showDeclineForm(request, response);
+        }
+    }
+
+
+
+
+
+    }
