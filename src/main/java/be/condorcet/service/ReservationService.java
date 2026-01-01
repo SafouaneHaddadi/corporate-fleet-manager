@@ -131,6 +131,7 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.APPROVED);
         reservation.setApprovedBy(manager);
         reservation.setApprovedAt(LocalDateTime.now());
+        reservation.setRefusalReason(null);
 
         return reservationDAO.update(reservation);
     }
