@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <html>
 <head>
     <title>Reservations</title>
@@ -168,6 +169,11 @@
                             </c:when>
                             <c:when test="${r.status == 'APPROVED'}">
                                 <span class="approved">${r.status}</span>
+                                <c:if test="${fn:contains(r.reason, 'Vehicle reassigned by manager after cancellation due to maintenance')}">
+                                    <div style="font-size: 12px; color: #17a2b8; margin-top: 5px;">
+                                        Reassigned vehicle (previous reservation was cancelled due to maintenance)
+                                    </div>
+                                </c:if>
                                 <c:if test="${not empty r.approvedBy}">
                                     <div class="approval-info">
                                         <strong>Approved by:</strong> ${r.approvedBy.username}
@@ -232,7 +238,7 @@
                                 <input type="submit" value="Decline"/>
                             </form>
                         </c:if>
-                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'APPROVED'}">
+                        <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'APPROVED' && !fn:contains(r.reason, 'Vehicle reassigned by manager after cancellation due to maintenance')}">
                             <a href="${pageContext.request.contextPath}/reservations?action=cancel&id=${r.id}" onclick="return confirm('Are you sure you want to cancel this reservation ?');">Cancel</a>
                         </c:if>
                     </td>
