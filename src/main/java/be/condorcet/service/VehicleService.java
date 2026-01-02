@@ -1,9 +1,13 @@
 package be.condorcet.service;
 
+import be.condorcet.dao.MaintenanceDAO;
+import be.condorcet.dao.ReservationDAO;
 import be.condorcet.dao.VehicleDAO;
 import be.condorcet.exception.BusinessException;
+import be.condorcet.model.Reservation;
 import be.condorcet.model.Vehicle;
 import be.condorcet.model.VehicleStatus;
+import be.condorcet.model.ReservationStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -15,6 +19,9 @@ public class VehicleService {
 
     @Inject
     private VehicleDAO vehicleDAO;
+
+    @Inject
+    private ReservationDAO reservationDAO;
 
     public List<Vehicle> getAllVehicles() {
         return vehicleDAO.findAll();
@@ -97,11 +104,28 @@ public class VehicleService {
         return vehicleDAO.update(existing);
     }
 
-    public void deleteVehicle(Long id) {
-        Vehicle v = vehicleDAO.findById(id);
-        if (v == null) {
-            throw new BusinessException("Vehicle not found");
+    public void deleteVehicle(Long vehicleId) {
+
+        Vehicle vehicle = findById(vehicleId);
+        if (vehicle == null) throw new BusinessException("Vehicle not found");
+
+        if (vehicle.getStatus() == VehicleStatus.MAINTENANCE) {
+            throw new BusinessException("Vehicle is currently in maintenance");
         }
-        vehicleDAO.delete(id);
+
+        List<Reservation> reservations = reservationDAO.findByVehicleId(vehicleId);
+        boolean hasActiveReservation = reservations.stream()
+                .anyMatch(r -> r.getStatus() == ReservationStatus.PENDING ||
+                        r.getStatus() == ReservationStatus.APPROVED);
+
+        if (hasActiveReservation) {
+            throw new BusinessException("Vehicle has active reservations");
+        }
+
+        if (vehicle.getStatus() == VehicleStatus.MAINTENANCE) {
+            throw new BusinessException("Vehicle is currently in maintenance and cannot be deleted");
+        }
+
+        vehicleDAO.delete(vehicleId);
     }
 }
