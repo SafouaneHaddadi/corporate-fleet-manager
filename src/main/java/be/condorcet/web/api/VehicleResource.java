@@ -86,7 +86,7 @@ public class VehicleResource {
             vehicleService.deleteVehicle(id);
             return Response.noContent().build();
         } catch (BusinessException e) {
-            return Response.status(Response.Status.NOT_FOUND)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Error: " + e.getMessage())
                     .build();
         }
