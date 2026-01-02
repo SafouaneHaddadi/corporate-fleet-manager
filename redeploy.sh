@@ -16,8 +16,35 @@ ORACLE_RUNNING=$(docker ps -q -f name=oracle-local)
 
 if [ -z "$WILDFLY_RUNNING" ] || [ -z "$ORACLE_RUNNING" ]; then
     echo "Un ou plusieurs conteneurs ne tournent pas → démarrage..."
+    echo "Démarrage des conteneurs (timeout augmenté)..."
+    export COMPOSE_HTTP_TIMEOUT=120
     docker-compose up -d
-    sleep 15  # attente plus longue pour que tout soit vraiment prêt
+
+    # Attends que WildFly soit vraiment prêt
+    echo "Attente du démarrage complet de WildFly..."
+    sleep 30
+
+    # Vérifie que WildFly répond
+    MAX_RETRIES=10
+    RETRY_COUNT=0
+
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        if docker exec wildfly-local //opt/jboss/wildfly/bin/jboss-cli.sh --connect --command=":read-attribute(name=server-state)" 2>/dev/null | grep -q "running"; then
+            echo "WildFly est opérationnel"
+            break
+        fi
+
+        echo "Attente... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
+        sleep 10
+        RETRY_COUNT=$((RETRY_COUNT+1))
+    done
+
+    if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+        echo "ERREUR : WildFly ne démarre pas"
+        docker logs wildfly-local --tail 50
+        exit 1
+    fi
+
     echo "Conteneurs lancés"
 else
     echo "Conteneurs déjà en cours d'exécution"
@@ -45,7 +72,8 @@ echo "Redéploiement propre via reload..."
 docker exec wildfly-local //opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="reload"
 if [ $? -ne 0 ]; then
     echo "Échec du reload CLI"
-    exit 1
+    echo "Tentative alternative de redeploy..."
+    docker exec wildfly-local //opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="deploy /opt/jboss/wildfly/standalone/deployments/ROOT.war --force"
 fi
 
 sleep 10

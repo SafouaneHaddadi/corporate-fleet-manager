@@ -25,6 +25,14 @@ public class ReservationService {
     @Inject
     private UserDAO userDAO;
 
+    public Reservation findById(Long id) {
+        Reservation r = reservationDAO.findById(id);
+        if (r == null) {
+            throw new BusinessException("Reservation not found with id " + id);
+        }
+        return r;
+    }
+
     public List<Reservation> getReservationsByStatus(String status) {
         if (status == null || status.isBlank()) {
             throw new BusinessException("status is required");
@@ -113,6 +121,11 @@ public class ReservationService {
             throw new BusinessException("Reservation is already approved");
         }
 
+        Vehicle vehicle = reservation.getVehicle();
+        if (vehicle.getStatus() == VehicleStatus.MAINTENANCE) {
+            throw new BusinessException("Cannot approve: vehicle is currently in maintenance");
+        }
+
         if (reservationDAO.hasOverlapping(
                 reservation.getVehicle().getId(),
                 reservation.getStartDate(),
@@ -123,6 +136,7 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.APPROVED);
         reservation.setApprovedBy(manager);
         reservation.setApprovedAt(LocalDateTime.now());
+        reservation.setRefusalReason(null);
 
         return reservationDAO.update(reservation);
     }
@@ -156,6 +170,76 @@ public class ReservationService {
 
         return reservationDAO.update(reservation);
     }
+
+    public Reservation cancelApprovedReservation(Long reservationId) {
+        Reservation reservation = reservationDAO.findById(reservationId);
+        if (reservation == null) {
+            throw new BusinessException("Reservation not found");
+        }
+        if (reservation.getStatus() != ReservationStatus.APPROVED) {
+            throw new BusinessException("Only APPROVED reservations can be cancelled by the manager");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.setRefusalReason("Cancelled by manager due to unplanned maintenance");
+
+        return reservationDAO.update(reservation);
+    }
+
+    public List<Vehicle> findAvailableVehiclesForPeriod(LocalDateTime start, LocalDateTime end) {
+
+        List<Vehicle> candidates = vehicleDAO.findAvailableVehicles();
+
+        return candidates.stream()
+                .filter(v -> !reservationDAO.hasOverlapping(v.getId(), start, end))
+                .toList();
+    }
+
+    public Reservation createAndApproveReservation(Reservation r, String employeeUsername, String managerUsername) {
+        if (r.getStartDate() == null) {
+            throw new BusinessException("Start date is required");
+        }
+        if (r.getEndDate() == null) {
+            throw new BusinessException("End date is required");
+        }
+        if (!r.getEndDate().isAfter(r.getStartDate())) {
+            throw new BusinessException("End date must be after start date");
+        }
+        if (r.getReason() == null || r.getReason().isBlank()) {
+            throw new BusinessException("Reason is required");
+        }
+        if (r.getVehicle() == null || r.getVehicle().getId() == null) {
+            throw new BusinessException("Vehicle id is required");
+        }
+
+        Long vehicleId = r.getVehicle().getId();
+        Vehicle vehicle = vehicleDAO.findById(vehicleId);
+        if (vehicle == null) {
+            throw new BusinessException("Vehicle not found");
+        }
+        if (vehicle.getStatus() != VehicleStatus.AVAILABLE) {
+            throw new BusinessException("Vehicle not available");
+        }
+        if (reservationDAO.hasOverlapping(vehicleId, r.getStartDate(), r.getEndDate())) {
+            throw new BusinessException("This vehicle is already reserved for the requested period");
+        }
+
+        User employee = userDAO.findByUsername(employeeUsername)
+                .orElseThrow(() -> new BusinessException("Employee not found"));
+
+        User manager = userDAO.findByUsername(managerUsername)
+                .orElseThrow(() -> new BusinessException("Manager not found"));
+
+        r.setVehicle(vehicle);
+        r.setEmployee(employee);
+        r.setStatus(ReservationStatus.APPROVED);
+        r.setApprovedBy(manager);
+        r.setApprovedAt(LocalDateTime.now());
+        r.setRefusalReason(null);
+
+        return reservationDAO.create(r);
+    }
+
 
 
 

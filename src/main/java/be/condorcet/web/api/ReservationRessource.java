@@ -177,6 +177,37 @@ public class ReservationRessource {
         return Response.ok(response).build();
     }
 
+    @PUT
+    @Path("/{id}/cancel")
+    @RolesAllowed("MANAGER")
+    public Response cancelReservation(@PathParam("id") Long id) {
+        try {
+            Reservation cancelled = reservationService.cancelApprovedReservation(id);
+
+            ReservationResponse response = new ReservationResponse(
+                    cancelled.getId(),
+                    cancelled.getStartDate(),
+                    cancelled.getEndDate(),
+                    cancelled.getReason(),
+                    cancelled.getStatus().name(),
+                    new VehicleResponse(
+                            cancelled.getVehicle().getBrand(),
+                            cancelled.getVehicle().getModel(),
+                            cancelled.getVehicle().getLicensePlate()
+                    ),
+                    cancelled.getEmployee().getUsername(),
+                    cancelled.getRefusalReason()
+            );
+
+            return Response.ok(response).build();
+
+        } catch (BusinessException be) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(be.getMessage())
+                    .build();
+        }
+    }
+
 
 
 

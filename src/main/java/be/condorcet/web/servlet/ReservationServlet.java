@@ -57,6 +57,17 @@ public class ReservationServlet extends HttpServlet {
                     showCreateForm(request, response);
                     break;
 
+                case "declineForm":
+                    showDeclineForm(request, response);
+                    break;
+
+                case "cancel":
+                    cancelReservation(request, response);
+                    break;
+
+                case "assignReplacement":
+                    assignReplacementVehicle(request, response);
+                    break;
 
                 default:
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action");
@@ -152,10 +163,20 @@ public class ReservationServlet extends HttpServlet {
                 createReservation(request, response);
                 break;
 
+            case "approve":
+                approveReservation(request, response);
+                break;
+
+            case "decline":
+                declineReservation(request, response);
+                break;
+
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+
+
 
     private void createReservation(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -201,6 +222,137 @@ public class ReservationServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
+
+
+    private void showDeclineForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            Reservation reservation = reservationService.findById(id);
+
+            if (reservation == null || reservation.getStatus() != ReservationStatus.PENDING) {
+                throw new BusinessException("Cannot decline: reservation not found or not pending");
+            }
+
+            request.setAttribute("reservation", reservation);
+            request.getRequestDispatcher("/WEB-INF/jsp/reservation/decline.jsp")
+                    .forward(request, response);
+
+        } catch (BusinessException e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response); //l'user retourne à la liste avec l'erreur
+        }
+    }
+
+    private void approveReservation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            User loggedUser = (User) request.getSession().getAttribute("loggedUser");
+            String managerUsername = loggedUser.getUsername();
+
+            reservationService.approveReservation(id, managerUsername);
+
+            request.setAttribute("successMessage", "Reservation #" + id + " approved");
+            listAllReservations(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response); //l'user est redigié vers la liste avec le msg de succes
+        }
+
+    }
+
+    private void declineReservation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            String reason = request.getParameter("reason");
+
+            if (reason == null || reason.isBlank()) {
+                throw new BusinessException("Reason is required to decline a reservation");
+            }
+
+            User loggedUser = (User) request.getSession().getAttribute("loggedUser");
+            String managerUsername = loggedUser.getUsername();
+
+            reservationService.declineReservation(id, managerUsername, reason);
+
+            request.setAttribute("successMessage", "Reservation #" + id + " declined");
+            listAllReservations(request, response);
+
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            //listAllReservations(request, response);
+            showDeclineForm(request, response);
+        }
+    }
+
+    private void cancelReservation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+
+            Reservation cancelled = reservationService.cancelApprovedReservation(id);
+
+            List<Vehicle> alternatives = reservationService.findAvailableVehiclesForPeriod(
+                    cancelled.getStartDate(),
+                    cancelled.getEndDate()
+            );
+
+            request.setAttribute("cancelled", cancelled);
+            request.setAttribute("alternatives", alternatives);
+
+            request.getRequestDispatcher("/WEB-INF/jsp/reservation/cancel-success.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response);
+        }
+    }
+
+    private void assignReplacementVehicle(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            Long originalId = Long.parseLong(request.getParameter("originalId")); //id de la reservation annulée
+            Long newVehicleId = Long.parseLong(request.getParameter("newVehicleId"));
+
+            Reservation original = reservationService.findById(originalId);
+            if (original == null || original.getStatus() != ReservationStatus.CANCELLED) {
+                throw new BusinessException("Original cancelled reservation not found");
+            }
+
+            Reservation newReservation = new Reservation();
+            newReservation.setStartDate(original.getStartDate());
+            newReservation.setEndDate(original.getEndDate());
+            newReservation.setReason("Vehicle reassigned by manager after cancellation due to maintenance");
+
+            //on associe le nouveau vehicule
+            Vehicle newVehicle = new Vehicle();
+            newVehicle.setId(newVehicleId);
+            newReservation.setVehicle(newVehicle);
+
+            User loggedUser = (User) request.getSession().getAttribute("loggedUser");
+            String managerUsername = loggedUser.getUsername();
+
+            //appel du service qui crée une reservation en mettant direct le statut à APPROVED
+            reservationService.createAndApproveReservation(newReservation, original.getEmployee().getUsername(), managerUsername);
+
+            request.setAttribute("successMessage", "Replacement vehicle assigned successfully to " + original.getEmployee().getUsername());
+            listAllReservations(request, response);
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            listAllReservations(request, response);
+        }
+    }
+
+
+
+
+
 
 
 }

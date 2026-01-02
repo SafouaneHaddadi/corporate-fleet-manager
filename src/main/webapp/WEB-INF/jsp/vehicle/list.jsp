@@ -175,6 +175,9 @@
         <a href="${pageContext.request.contextPath}/reservations?action=list">
             Manage Reservations
         </a>
+        <a href="${pageContext.request.contextPath}/maintenances?action=list">
+            All maintenances
+        </a>
     </c:if>
     <c:if test="${loggedUser.role == 'EMPLOYEE'}">
         <a href="${pageContext.request.contextPath}/reservations?action=my">
@@ -245,9 +248,9 @@
                             <a href="${pageContext.request.contextPath}/vehicles?action=view&id=${v.id}">
                                 View details
                             </a>
-                            <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}" class="reserve-btn">
-                                Reserve
-                            </a>
+                            <c:if test="${loggedUser.role == 'EMPLOYEE' && v.status == 'AVAILABLE'}">
+                                <a href="${pageContext.request.contextPath}/reservations?action=create&vehicleId=${v.id}" class="reserve-btn"> Reserve </a>
+                            </c:if>
                         </c:if>
                         <c:if test="${loggedUser.role=='MANAGER'}">
                             <form action="${pageContext.request.contextPath}/vehicles" method="post" style="display:inline;">
@@ -261,6 +264,11 @@
                             <a class="edit-link" href = "${pageContext.request.contextPath}/vehicles?action=edit&id=${v.id}">
                                 Edit
                             </a>
+                            <c:if test="${v.status == 'AVAILABLE'}">
+                                <a href="${pageContext.request.contextPath}/maintenances?action=create&vehicleId=${v.id}">
+                                    Create maintenance
+                                </a>
+                            </c:if>
                         </c:if>
                     </td>
                 </tr>

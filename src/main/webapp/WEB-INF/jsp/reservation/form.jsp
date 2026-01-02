@@ -92,7 +92,7 @@
     <input type="datetime-local" name="endDate" value="${reservation.endDateStr}" required/><br/><br/>
 
     <input type="submit" value="Reserve"/>
-    <a href="${pageContext.request.contextPath}/reservations?action=my" class="cancel">Cancel</a>
+    <a href="${pageContext.request.contextPath}/vehicles?action=available" class="cancel">Cancel</a>
 </form>
 
 </body>
