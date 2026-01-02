@@ -1,5 +1,7 @@
 package be.condorcet.web.api;
 
+import be.condorcet.dto.ReservationResponse;
+import be.condorcet.dto.VehicleResponse;
 import be.condorcet.exception.BusinessException;
 import be.condorcet.model.Reservation;
 import be.condorcet.model.Vehicle;
@@ -112,7 +114,26 @@ public class VehicleResource {
     public Response getVehicleReservations(@PathParam("id") Long vehicleId) {
         try {
             List<Reservation> reservations = reservationService.getVehicleReservations(vehicleId);
-            return Response.ok(reservations).build();
+
+            List<ReservationResponse> response = reservations.stream()
+                    .map(r -> new ReservationResponse(
+                            r.getId(),
+                            r.getStartDate(),
+                            r.getEndDate(),
+                            r.getReason(),
+                            r.getStatus().name(),
+                            new VehicleResponse(
+                                    r.getVehicle().getBrand(),
+                                    r.getVehicle().getModel(),
+                                    r.getVehicle().getLicensePlate()
+                            ),
+                            r.getEmployee().getUsername(),
+                            r.getRefusalReason()
+                    ))
+                    .toList();
+
+            return Response.ok(response).build();
+
         } catch (BusinessException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Error: " + e.getMessage())
