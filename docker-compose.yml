@@ -23,7 +23,7 @@ services:
       oracle:
         condition: service_healthy
     ports:
-      - "50080:8080"
+      - "8180:8080"
       - "19990:9990"
     #    volumes:
     #      - ./target/corporate-fleet-manager.war:/opt/jboss/wildfly/standalone/deployments/ROOT.war
