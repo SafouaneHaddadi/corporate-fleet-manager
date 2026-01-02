@@ -1,7 +1,11 @@
 package be.condorcet.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "VEHICLES")
@@ -30,4 +34,13 @@ public class Vehicle {
     // la val de l’enum sera convertie en String dans la JSP
     @Enumerated(EnumType.STRING)
     private VehicleStatus status = VehicleStatus.AVAILABLE;
-}
+
+    @OneToMany(mappedBy = "vehicle")
+    @JsonIgnore
+    private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "vehicle")
+    @JsonIgnore
+    private List<Maintenance> maintenances = new ArrayList<>();}
+
+
