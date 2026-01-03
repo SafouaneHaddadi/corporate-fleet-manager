@@ -138,6 +138,7 @@
         <table>
             <tr>
                 <th>Vehicle</th>
+                <th>User</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>Reason</th>
@@ -147,6 +148,9 @@
                 <tr>
                     <td>
                             ${r.vehicle.brand} ${r.vehicle.model} (${r.vehicle.licensePlate})
+                    </td>
+                    <td>
+                            ${r.employee.username}
                     </td>
                     <td>
                         <fmt:parseDate value="${r.startDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedStartDate" />
