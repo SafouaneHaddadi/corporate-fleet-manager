@@ -144,6 +144,7 @@
             <option value="PENDING">PENDING</option>
             <option value="APPROVED">APPROVED</option>
             <option value="REFUSED">REFUSED</option>
+            <option value="CANCELLED">CANCELLED</option>
         </select>
         <input type="submit" value="Search"/>
     </form>
