@@ -91,6 +91,22 @@
             font-size: 11px;
             color: #856404;
         }
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .decline-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -233,13 +249,13 @@
                             <form action="${pageContext.request.contextPath}/reservations" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="approve"/>
                                 <input type="hidden" name="id" value="${r.id}"/>
-                                <input type="submit" value="Approve"/>
+                                <input type="submit" value="Approve" class="approve-btn"/>
                             </form>
 
                             <form action="${pageContext.request.contextPath}/reservations" method="get" style="display:inline;">
                                 <input type="hidden" name="action" value="declineForm"/>
                                 <input type="hidden" name="id" value="${r.id}"/>
-                                <input type="submit" value="Decline"/>
+                                <input type="submit" value="Decline" class="decline-btn"/>
                             </form>
                         </c:if>
                         <c:if test="${loggedUser.role == 'MANAGER' && r.status == 'APPROVED' && !fn:contains(r.reason, 'Vehicle reassigned by manager after cancellation due to maintenance')}">
