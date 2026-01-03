@@ -1,7 +1,11 @@
 package be.condorcet.web.api;
 
+import be.condorcet.dto.ReservationResponse;
+import be.condorcet.dto.VehicleResponse;
 import be.condorcet.exception.BusinessException;
+import be.condorcet.model.Reservation;
 import be.condorcet.model.Vehicle;
+import be.condorcet.service.ReservationService;
 import be.condorcet.service.VehicleService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -20,6 +24,9 @@ public class VehicleResource {
 
     @Inject
     private VehicleService vehicleService;
+
+    @Inject
+    private ReservationService reservationService;
 
     @GET
     @RolesAllowed("MANAGER")
@@ -79,7 +86,7 @@ public class VehicleResource {
             vehicleService.deleteVehicle(id);
             return Response.noContent().build();
         } catch (BusinessException e) {
-            return Response.status(Response.Status.NOT_FOUND)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Error: " + e.getMessage())
                     .build();
         }
@@ -99,5 +106,38 @@ public class VehicleResource {
     public Response searchByBrand(@QueryParam("brand") String brand) {
         List<Vehicle> vehicles = vehicleService.searchVehicles(brand);
         return Response.ok(vehicles).build();
+    }
+
+    @GET
+    @Path("/{id}/reservations")
+    @RolesAllowed({"MANAGER"})
+    public Response getVehicleReservations(@PathParam("id") Long vehicleId) {
+        try {
+            List<Reservation> reservations = reservationService.getVehicleReservations(vehicleId);
+
+            List<ReservationResponse> response = reservations.stream()
+                    .map(r -> new ReservationResponse(
+                            r.getId(),
+                            r.getStartDate(),
+                            r.getEndDate(),
+                            r.getReason(),
+                            r.getStatus().name(),
+                            new VehicleResponse(
+                                    r.getVehicle().getBrand(),
+                                    r.getVehicle().getModel(),
+                                    r.getVehicle().getLicensePlate()
+                            ),
+                            r.getEmployee().getUsername(),
+                            r.getRefusalReason()
+                    ))
+                    .toList();
+
+            return Response.ok(response).build();
+
+        } catch (BusinessException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Error: " + e.getMessage())
+                    .build();
+        }
     }
 }

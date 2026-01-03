@@ -50,6 +50,17 @@ public class ReservationDAOImpl extends GenericDAOImpl<Reservation, Long> implem
                 .getResultList();
     }
 
+    @Override
+    public List<Reservation> findByVehicleId(Long vehicleId) {
+        return em.createQuery(
+                        "SELECT r FROM Reservation r " +
+                                "WHERE r.vehicle.id = :vehicleId " +
+                                "ORDER BY r.startDate DESC",
+                        Reservation.class)
+                .setParameter("vehicleId", vehicleId)
+                .getResultList();
+    }
+
 
 
 }

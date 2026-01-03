@@ -15,4 +15,5 @@ public interface ReservationDAO extends GenericDAO<Reservation, Long> {
 
     List<Reservation> findByStatus(ReservationStatus status);
 
+    List<Reservation> findByVehicleId(Long vehicleId);
 }

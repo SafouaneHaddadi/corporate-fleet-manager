@@ -240,6 +240,20 @@ public class ReservationService {
         return reservationDAO.create(r);
     }
 
+    public List<Reservation> getVehicleReservations(Long vehicleId) {
+
+        if (vehicleId == null) {
+            throw new BusinessException("Vehicle id is required");
+        }
+
+        Vehicle vehicle = vehicleDAO.findById(vehicleId);
+        if (vehicle == null) {
+            throw new BusinessException("Vehicle not found with ID: " + vehicleId);
+        }
+
+        return reservationDAO.findByVehicleId(vehicleId);
+    }
+
 
 
 
