@@ -1,0 +1,493 @@
+{
+  "info": {
+    "_postman_id": "corporate-fleet-manager-full",
+    "name": "Corporate Fleet Manager API - Complete",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "⚙️ Configuration",
+      "item": [
+        {
+          "name": "Set Environment Variables",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "",
+              "host": [""]
+            },
+            "description": "📋 Available users:\n👨‍💼 MANAGERS:\n- Username: Alex, Password: alex123\n\n👥 EMPLOYEES:\n- Username: Sam, Password: sam123\n- Username: Arya, Password: arya123\n\n📍 Base URL: http://localhost:8180\n\nSet these variables in Postman environment:\n1. base_url: http://localhost:8180\n2. username: Alex (or Sam/Arya)\n3. password: alex123 (or sam123/arya123)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "item": [
+        {
+          "name": "GET /api/users (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Alex (Manager) can access\nSam/Arya (Employee) will get 403"
+          }
+        },
+        {
+          "name": "POST /api/users/register (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"new@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"EMPLOYEE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "register"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/users/login (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"Sam\",\n  \"password\": \"sam123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "login"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/users/me/reservations (Employee only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "reservations"]
+            },
+            "description": "Sam or Arya can see their own reservations\nAlex (Manager) will get 403"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚗 Vehicles",
+      "item": [
+        {
+          "name": "GET /api/vehicles (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles"]
+            },
+            "description": "Only Alex can see ALL vehicles"
+          }
+        },
+        {
+          "name": "GET /api/vehicles/available (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/available",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "available"]
+            },
+            "description": "Anyone can see available vehicles"
+          }
+        },
+        {
+          "name": "GET /api/vehicles/search (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/search?brand=audi",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "search"],
+              "query": [
+                {
+                  "key": "brand",
+                  "value": "audi"
+                }
+              ]
+            },
+            "description": "Search vehicles by brand (public)"
+          }
+        },
+        {
+          "name": "GET /api/vehicles/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "{{vehicle_id}}"],
+              "variable": [
+                {
+                  "key": "vehicle_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Alex, Sam, Arya can all access"
+          }
+        },
+        {
+          "name": "POST /api/vehicles (Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3\",\n  \"licensePlate\": \"1-TES-123\",\n  \"manufacture_year\": 2023,\n  \"mileage\": 1000,\n  \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles"]
+            },
+            "description": "Only Alex can create vehicles"
+          }
+        },
+        {
+          "name": "PUT /api/vehicles/{id} (Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Audi\",\n  \"model\": \"A4\",\n  \"status\": \"MAINTENANCE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "{{vehicle_id}}"],
+              "variable": [
+                {
+                  "key": "vehicle_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Only Alex can update vehicles"
+          }
+        },
+        {
+          "name": "DELETE /api/vehicles/{id} (Manager only)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "{{vehicle_id}}"],
+              "variable": [
+                {
+                  "key": "vehicle_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Only Alex can delete vehicles"
+          }
+        },
+        {
+          "name": "GET /api/vehicles/{id}/reservations (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehicles/{{vehicle_id}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehicles", "{{vehicle_id}}", "reservations"],
+              "variable": [
+                {
+                  "key": "vehicle_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Only Alex can see vehicle reservation history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Reservations",
+      "item": [
+        {
+          "name": "GET /api/reservations (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations"]
+            },
+            "description": "Alex can see ALL reservations"
+          }
+        },
+        {
+          "name": "GET /api/reservations/search (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reservations/search?status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations", "search"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            },
+            "description": "Alex can filter reservations by status"
+          }
+        },
+        {
+          "name": "POST /api/reservations (Employee only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle\": {\n    \"id\": 7\n  },\n  \"startDate\": \"2025-03-10T09:00:00\",\n  \"endDate\": \"2025-03-12T18:00:00\",\n  \"reason\": \"Mission client\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations"]
+            },
+            "description": "Sam or Arya can create reservations\nAlex (Manager) will get 403"
+          }
+        },
+        {
+          "name": "PUT /api/reservations/{id}/approve (Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reservations/{{reservation_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations", "{{reservation_id}}", "approve"],
+              "variable": [
+                {
+                  "key": "reservation_id",
+                  "value": "29"
+                }
+              ]
+            },
+            "description": "Only Alex can approve reservations"
+          }
+        },
+        {
+          "name": "PUT /api/reservations/{id}/decline (Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Vehicle not available during this period\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reservations/{{reservation_id}}/decline",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations", "{{reservation_id}}", "decline"],
+              "variable": [
+                {
+                  "key": "reservation_id",
+                  "value": "29"
+                }
+              ]
+            },
+            "description": "Only Alex can decline reservations (with reason)"
+          }
+        },
+        {
+          "name": "PUT /api/reservations/{id}/cancel (Manager only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reservations/{{reservation_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reservations", "{{reservation_id}}", "cancel"],
+              "variable": [
+                {
+                  "key": "reservation_id",
+                  "value": "29"
+                }
+              ]
+            },
+            "description": "Only Alex can cancel approved reservations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Maintenance",
+      "item": [
+        {
+          "name": "GET /api/maintenances (Manager only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/maintenances",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenances"]
+            },
+            "description": "Only Alex can view all maintenance records"
+          }
+        },
+        {
+          "name": "POST /api/maintenances (Manager only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle\": {\n    \"id\": 7\n  },\n  \"type\": \"OIL_CHANGE\",\n  \"startDate\": \"2025-03-15T09:00:00\",\n  \"endDate\": \"2025-03-15T12:00:00\",\n  \"description\": \"Regular oil change\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenances",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenances"]
+            },
+            "description": "Only Alex can schedule maintenance"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8180"
+    },
+    {
+      "key": "vehicle_id",
+      "value": "7"
+    },
+    {
+      "key": "reservation_id",
+      "value": "29"
+    },
+    {
+      "key": "username",
+      "value": "Alex"
+    },
+    {
+      "key": "password",
+      "value": "alex123"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set Basic Auth credentials automatically",
+          "const username = pm.variables.get('username');",
+          "const password = pm.variables.get('password');",
+          "const base64Credentials = btoa(username + ':' + password);",
+          "pm.request.headers.add({",
+          "  key: 'Authorization',",
+          "  value: 'Basic ' + base64Credentials",
+          "});",
+          "",
+          "// Log which user is being used",
+          "console.log('Using credentials for user:', username);"
+        ]
+      }
+    }
+  ],
+  "auth": null
+}
+
