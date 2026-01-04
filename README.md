@@ -139,11 +139,11 @@ Your tables (`VEHICLES`, `RESERVATION`, `MAINTENANCE`, `APP_USER`) will appear u
 **Quick setup:** Download `corporate-fleet-manager-complete.json` and import into Postman.
 
 ### Environment Variables
-- `base_url`: `http://localhost:50080`
+- `base_url`: `http://localhost:8180`
 - `username`: `Alex` (manager) or `Sam`/`Arya` (employees)
 - `password`: `alex123` or `sam123`/`arya123`
 - `vehicle_id`: `7` (example)
-- `reservation_id`: `1` (example)
+- `reservation_id`: `29` (example)
 
 ### Test Users
 - **Alex** - Manager - `alex123` - Full access
