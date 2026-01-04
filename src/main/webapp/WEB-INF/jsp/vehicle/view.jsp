@@ -86,7 +86,7 @@
     </div>
 </c:if>
 
-<a class="back" href="${pageContext.request.contextPath}/vehicles?action=available">
+<a class="back" href="${pageContext.request.contextPath}/vehicles?action=list">
     ← Back to list
 </a>
 
