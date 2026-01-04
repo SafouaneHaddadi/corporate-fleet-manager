@@ -106,7 +106,33 @@ To connect to the Oracle database:
 ```bash
 docker exec -it oracle-local sqlplus ORA53/oracle@localhost:1521/FREEPDB1
 ```
+### Recommended: Graphical tool (DBeaver or Oracle SQL Developer)
 
+For a much better experience than the command line (colored tables, easy data browsing, auto-completion, etc.), use a graphical tool:
+
+**DBeaver (free and recommended):**
+1. Download: https://dbeaver.io/download/
+2. New connection → Oracle
+3. Connection settings:
+    - Host: `localhost`
+    - Port: `15210` (important! your docker-compose maps 15210 → 1521)
+    - Service name: `FREEPDB1`
+    - Username: `ORA53`
+    - Password: `oracle`
+    - Authentication: Native
+4. Test connection → Save
+
+**Oracle SQL Developer (free alternative):**
+1. Download: https://www.oracle.com/tools/downloads/sqldev-downloads.html
+2. New connection:
+    - Connection type: Oracle - Thin
+    - Hostname: `localhost`
+    - Port: `15210`
+    - Service name: `FREEPDB1`
+    - Username: `ORA53`
+    - Password: `oracle`
+
+Your tables (`VEHICLES`, `RESERVATION`, `MAINTENANCE`, `APP_USER`) will appear under the schema `ORA53`.
 
 ## API Testing with Postman
 
